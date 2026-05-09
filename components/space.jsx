@@ -1,8 +1,9 @@
-/* global React, Reveal, Butterfly, DiamondDivider, Placeholder */
-const { useState: useSpaceState } = React;
+'use client';
+import { useState } from 'react';
+import { Reveal, Placeholder } from './primitives';
 
-function Space() {
-  const [active, setActive] = useSpaceState(0);
+export default function Space() {
+  const [active, setActive] = useState(0);
 
   const images = [
     { label: 'salle principale · vitrine', tone: 'cream' },
@@ -89,15 +90,6 @@ function Space() {
         </Reveal>
       </div>
 
-      <style>{`
-        @media (max-width: 920px) {
-          .space-grid { grid-template-columns: 1fr !important; }
-          .space-imgs { grid-template-columns: 1fr !important; }
-          .space-imgs > div:last-child { grid-template-columns: repeat(4, 1fr) !important; grid-template-rows: none !important; }
-        }
-      `}</style>
     </section>
   );
 }
-
-window.Space = Space;

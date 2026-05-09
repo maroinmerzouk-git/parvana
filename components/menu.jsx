@@ -1,5 +1,6 @@
-/* global React, Reveal, Butterfly, DiamondDivider, Placeholder */
-const { useState: useMenuState } = React;
+'use client';
+import { Fragment, useState } from 'react';
+import { Reveal, Placeholder } from './primitives';
 
 const DISHES = [
   {
@@ -67,9 +68,9 @@ const DISHES = [
   },
 ];
 
-function Menu() {
-  const [active, setActive] = useMenuState('kabuli');
-  const [filter, setFilter] = useMenuState('Tous');
+export default function Menu() {
+  const [active, setActive] = useState('kabuli');
+  const [filter, setFilter] = useState('Tous');
 
   const filters = ['Tous', 'Afghanistan', 'Turquie', 'Végétarien', 'Dessert'];
 
@@ -228,7 +229,7 @@ function Menu() {
           }}>
             <div className="marquee serif-it" style={{ fontSize: 64, color: 'var(--ink)', lineHeight: 1 }}>
               {Array.from({ length: 2 }).map((_, i) => (
-                <React.Fragment key={i}>
+                <Fragment key={i}>
                   <span>Tradition</span>
                   <span style={{ color: 'var(--pomegranate)' }}>✦</span>
                   <span style={{ fontStyle: 'normal' }} className="serif">Création</span>
@@ -237,21 +238,13 @@ function Menu() {
                   <span style={{ color: 'var(--pomegranate)' }}>✦</span>
                   <span style={{ fontStyle: 'normal' }} className="serif">Voyage</span>
                   <span style={{ color: 'var(--pomegranate)' }}>✦</span>
-                </React.Fragment>
+                </Fragment>
               ))}
             </div>
           </div>
         </Reveal>
       </div>
 
-      <style>{`
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-        @media (max-width: 920px) {
-          .menu-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
-        }
-      `}</style>
     </section>
   );
 }
-
-window.Menu = Menu;

@@ -1,11 +1,11 @@
-/* global React, ReactDOM, Hero, Story, Menu, Space, Brunch, Traiteur, Visit, Footer, Butterfly */
-const { useEffect: useAppEffect, useState: useAppState } = React;
+'use client';
+import { useEffect, useState } from 'react';
+import { Butterfly } from './primitives';
 
-function Nav() {
-  const [scrolled, setScrolled] = useAppState(false);
-  const [open, setOpen] = useAppState(false);
+export default function Nav() {
+  const [scrolled, setScrolled] = useState(false);
 
-  useAppEffect(() => {
+  useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -34,21 +34,3 @@ function Nav() {
     </nav>
   );
 }
-
-function App() {
-  return (
-    <div id="top">
-      <Nav />
-      <Hero />
-      <Story />
-      <Menu />
-      <Space />
-      <Brunch />
-      <Traiteur />
-      <Visit />
-      <Footer />
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);

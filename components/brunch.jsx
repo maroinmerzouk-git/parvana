@@ -1,6 +1,7 @@
-/* global React, Reveal, Butterfly, DiamondDivider, Placeholder */
+'use client';
+import { Reveal, Placeholder } from './primitives';
 
-function Brunch() {
+export function Brunch() {
   return (
     <section id="brunch" style={{
       background: 'var(--cream)',
@@ -53,16 +54,11 @@ function Brunch() {
         </div>
       </div>
 
-      <style>{`
-        @media (max-width: 920px) {
-          .brunch-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
-        }
-      `}</style>
     </section>
   );
 }
 
-function Traiteur() {
+export function Traiteur() {
   return (
     <section id="traiteur" style={{
       background: 'var(--pomegranate)',
@@ -105,14 +101,6 @@ function Traiteur() {
         </Reveal>
       </div>
 
-      <style>{`
-        @media (max-width: 920px) {
-          .traiteur-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
-        }
-      `}</style>
     </section>
   );
 }
-
-window.Brunch = Brunch;
-window.Traiteur = Traiteur;

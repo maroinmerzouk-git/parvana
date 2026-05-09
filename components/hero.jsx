@@ -1,7 +1,8 @@
-/* global React, Reveal, Butterfly, DiamondDivider, Placeholder */
-const { useEffect, useState } = React;
+'use client';
+import { useEffect, useState } from 'react';
+import { Reveal, Butterfly } from './primitives';
 
-function Hero() {
+export default function Hero() {
   const [scrolled, setScrolled] = useState(0);
   useEffect(() => {
     const onScroll = () => setScrolled(Math.min(1, window.scrollY / 600));
@@ -134,14 +135,6 @@ function Hero() {
         </Reveal>
       </div>
 
-      <style>{`
-        @keyframes scrollPulse {
-          0%, 100% { transform: scaleY(0.4); transform-origin: top; opacity: 0.3; }
-          50% { transform: scaleY(1); transform-origin: top; opacity: 0.7; }
-        }
-      `}</style>
     </section>
   );
 }
-
-window.Hero = Hero;

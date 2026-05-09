@@ -4,31 +4,47 @@ Editorial website for **Parvana** — Afghan & Central Asian cuisine in Nantes, 
 
 > *Tradition · Création · Saveur*
 
-## About
+## Stack
 
-Static marketing site built with vanilla HTML/CSS and React (UMD + Babel standalone). No build step — open `index.html` and it runs.
-
-Aesthetic: editorial / Persian-poetry feel. Lapis-lazuli indigo, warm cream, saffron gold, pomegranate red — drawn from Afghan textiles. Type pairing: Cormorant Garamond italic + Manrope + Vazirmatn (Persian).
-
-## Sections
-
-- **Hero** — full-bleed lapis with the *Parvana* wordmark, butterfly silhouette, address & hours
-- **Histoire** — origin of the name (papillon / literary heroine)
-- **Carte** — interactive dish list with filters and live detail panel
-- **Le lieu** — quote and gallery
-- **Brunch** + **Traiteur**
-- **Visiter** — map, hours, sticky reservation form
+- **Next.js** App Router (React 19, server-rendered)
+- **next/font** for Cormorant Garamond, Manrope, Vazirmatn
+- Plain CSS (no Tailwind) — global styles in `app/globals.css`
+- Deployed on **Vercel**
 
 ## Run locally
 
 ```bash
-python3 -m http.server 8000
-# or
-npx serve .
+npm install
+npm run dev
 ```
 
-Then open http://localhost:8000.
+Open http://localhost:3000.
 
-## Deploy
+## Build
 
-Deployed on Vercel as a static site (no build configuration needed).
+```bash
+npm run build
+npm start
+```
+
+## Structure
+
+```
+app/
+  layout.jsx     # root layout, font wiring, <head>
+  page.jsx       # composes the page sections
+  globals.css    # design tokens + global styles
+components/
+  primitives.jsx # Reveal, Butterfly, DiamondDivider, Placeholder
+  nav.jsx
+  hero.jsx
+  story.jsx
+  menu.jsx
+  space.jsx
+  brunch.jsx     # Brunch + Traiteur
+  visit.jsx      # Visit + Footer
+```
+
+## Design
+
+Editorial / Persian-poetry feel. Palette: lapis-lazuli indigo, warm cream, saffron gold, pomegranate red — drawn from Afghan textiles. The placeholder boxes are intentional — drop in real photos as they become available.

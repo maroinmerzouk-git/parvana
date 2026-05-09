@@ -1,8 +1,8 @@
-/* global React */
-const { useEffect, useRef, useState } = React;
+'use client';
+import { useEffect, useRef, useState } from 'react';
 
 // Reveal-on-scroll wrapper
-function Reveal({ children, delay = 0, as = 'div', className = '', style = {} }) {
+export function Reveal({ children, delay = 0, as = 'div', className = '', style = {} }) {
   const ref = useRef(null);
   const [seen, setSeen] = useState(false);
   useEffect(() => {
@@ -24,7 +24,7 @@ function Reveal({ children, delay = 0, as = 'div', className = '', style = {} })
 }
 
 // Butterfly silhouette — primitives only (ellipses + body line + dots)
-function Butterfly({ size = 64, color = 'currentColor', stroke = 1.2 }) {
+export function Butterfly({ size = 64, color = 'currentColor', stroke = 1.2 }) {
   return (
     <svg width={size} height={size * 0.85} viewBox="0 0 80 68" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round">
       {/* body */}
@@ -46,7 +46,7 @@ function Butterfly({ size = 64, color = 'currentColor', stroke = 1.2 }) {
 }
 
 // Diamond divider — primitives
-function DiamondDivider({ color = 'currentColor', count = 5 }) {
+export function DiamondDivider({ color = 'currentColor', count = 5 }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, color }}>
       <span style={{ flex: 1, height: 1, background: color, opacity: 0.3 }} />
@@ -65,7 +65,7 @@ function DiamondDivider({ color = 'currentColor', count = 5 }) {
 }
 
 // Image placeholder
-function Placeholder({ label, height = 360, dark = false, aspect, style = {} }) {
+export function Placeholder({ label, height = 360, dark = false, aspect, style = {} }) {
   return (
     <div className={`ph ${dark ? 'dark' : ''}`} style={{
       height: aspect ? undefined : height,
@@ -77,5 +77,3 @@ function Placeholder({ label, height = 360, dark = false, aspect, style = {} }) 
     </div>
   );
 }
-
-Object.assign(window, { Reveal, Butterfly, DiamondDivider, Placeholder });

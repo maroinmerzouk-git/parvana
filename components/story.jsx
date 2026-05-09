@@ -1,6 +1,7 @@
-/* global React, Reveal, Butterfly, DiamondDivider, Placeholder */
+'use client';
+import { Reveal, DiamondDivider } from './primitives';
 
-function Story() {
+export default function Story() {
   return (
     <section id="histoire" style={{
       background: 'var(--cream)',
@@ -108,13 +109,6 @@ function Story() {
         </Reveal>
       </div>
 
-      <style>{`
-        @media (max-width: 920px) {
-          .story-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
-        }
-      `}</style>
     </section>
   );
 }
-
-window.Story = Story;

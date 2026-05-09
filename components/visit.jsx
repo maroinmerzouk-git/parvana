@@ -1,11 +1,12 @@
-/* global React, Reveal, Butterfly, DiamondDivider, Placeholder */
-const { useState: useVisitState } = React;
+'use client';
+import { useState } from 'react';
+import { Reveal, Butterfly, Placeholder } from './primitives';
 
-function Visit() {
-  const [form, setForm] = useVisitState({
+export function Visit() {
+  const [form, setForm] = useState({
     name: '', email: '', phone: '', date: '', time: '12:30', covers: '2', message: '', service: 'Déjeuner',
   });
-  const [submitted, setSubmitted] = useVisitState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const onChange = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
   const onSubmit = (e) => { e.preventDefault(); setSubmitted(true); };
@@ -177,11 +178,6 @@ function Visit() {
         </div>
       </div>
 
-      <style>{`
-        @media (max-width: 920px) {
-          .visit-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
-        }
-      `}</style>
     </section>
   );
 }
@@ -210,7 +206,7 @@ function FormField({ label, children }) {
   );
 }
 
-function Footer() {
+export function Footer() {
   return (
     <footer style={{
       background: 'var(--lapis-deep)',
@@ -260,17 +256,6 @@ function Footer() {
         </div>
       </div>
 
-      <style>{`
-        @media (max-width: 920px) {
-          .footer-grid { grid-template-columns: 1fr 1fr !important; }
-        }
-        @media (max-width: 600px) {
-          .footer-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
     </footer>
   );
 }
-
-window.Visit = Visit;
-window.Footer = Footer;
