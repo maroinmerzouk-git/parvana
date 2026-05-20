@@ -1,7 +1,11 @@
-import "dotenv/config";
+import { config } from "dotenv";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { migrate } from "drizzle-orm/neon-http/migrator";
+
+// Load .env.local first (Next.js convention), then .env as fallback
+config({ path: ".env.local" });
+config({ path: ".env" });
 
 async function main() {
   const url = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL;
