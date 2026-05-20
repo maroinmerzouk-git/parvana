@@ -14,6 +14,7 @@ import {
   clientConfirmationEmail,
   clientRejectionEmail,
 } from "@/lib/email/templates";
+import { menuSchema } from "@/lib/schemas/menu";
 
 const idSchema = z.string().uuid();
 const rejectSchema = z.object({
@@ -157,4 +158,44 @@ export async function markSeen(rawId: string) {
 
   revalidatePath("/admin/reservations");
   return { ok: true };
+}
+
+type SaveMenuResult =
+  | { ok: true; version: number }
+  | { ok: false; error: string; details?: unknown };
+
+export async function saveMenu(rawJson: string): Promise<SaveMenuResult> {
+  const userId = await requireAuth();
+
+  let parsedJson: unknown;
+  try {
+    parsedJson = JSON.parse(rawJson);
+  } catch (err) {
+    return {
+      ok: false,
+      error: `JSON invalide : ${(err as Error).message}`,
+    };
+  }
+
+  const validated = menuSchema.safeParse(parsedJson);
+  if (!validated.success) {
+    return {
+      ok: false,
+      error: "Le menu ne respecte pas le schéma attendu.",
+      details: validated.error.flatten(),
+    };
+  }
+
+  const db = getDb();
+  const [row] = await db
+    .insert(schema.menus)
+    .values({
+      data: validated.data,
+      createdBy: userId,
+    })
+    .returning({ version: schema.menus.version });
+
+  revalidatePath("/menu");
+  revalidatePath("/admin/menu");
+  return { ok: true, version: row.version };
 }

@@ -1,37 +1,47 @@
-import menuData from "@/content/menu.json";
+import { desc } from "drizzle-orm";
+import { getDb, schema } from "@/db";
+import { menuSchema, type Menu } from "@/lib/schemas/menu";
+import staticMenu from "@/content/menu.json";
 
-export type MenuTag =
-  | "végétarien"
-  | "vegan"
-  | "épicé"
-  | "signature"
-  | "fait maison"
-  | "soupe";
+export type {
+  Menu,
+  MenuService,
+  MenuCategory,
+  MenuItem,
+  MenuTag,
+} from "@/lib/schemas/menu";
 
-export interface MenuItem {
-  name: string;
-  description: string;
-  price: string | null;
-  tags?: MenuTag[];
+export interface CurrentMenu {
+  menu: Menu;
+  version: number | null; // null = fallback JSON, not from DB
+  source: "db" | "fallback";
 }
 
-export interface MenuCategory {
-  title: string;
-  items: MenuItem[];
-}
+export async function getCurrentMenu(): Promise<CurrentMenu> {
+  try {
+    const db = getDb();
+    const [row] = await db
+      .select()
+      .from(schema.menus)
+      .orderBy(desc(schema.menus.version))
+      .limit(1);
 
-export interface MenuService {
-  active: boolean;
-  intro: string;
-  formule: string | null;
-  categories: MenuCategory[];
-}
+    if (row) {
+      const parsed = menuSchema.safeParse(row.data);
+      if (parsed.success) {
+        return { menu: parsed.data, version: row.version, source: "db" };
+      }
+      console.error(
+        "[menu] DB row failed Zod validation, falling back:",
+        parsed.error.format(),
+      );
+    }
+  } catch (err) {
+    console.error("[menu] DB unavailable, falling back to JSON:", err);
+  }
 
-export interface Menu {
-  midi: MenuService;
-  soir: MenuService;
-}
-
-export function getMenu(): Menu {
-  return menuData as Menu;
+  // Fallback: validate the static JSON too, so a corrupt file doesn't
+  // silently ship malformed data.
+  const fallback = menuSchema.parse(staticMenu);
+  return { menu: fallback, version: null, source: "fallback" };
 }

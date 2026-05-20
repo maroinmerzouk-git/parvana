@@ -9,6 +9,8 @@ import {
   boolean,
   check,
   index,
+  jsonb,
+  serial,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -57,3 +59,19 @@ export const reservations = pgTable(
 
 export type Reservation = typeof reservations.$inferSelect;
 export type NewReservation = typeof reservations.$inferInsert;
+
+export const menus = pgTable(
+  "menus",
+  {
+    version: serial("version").primaryKey(),
+    data: jsonb("data").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    createdBy: text("created_by"),
+  },
+  (t) => [index("menus_created_at_idx").on(t.createdAt.desc())],
+);
+
+export type MenuRow = typeof menus.$inferSelect;
+export type NewMenuRow = typeof menus.$inferInsert;

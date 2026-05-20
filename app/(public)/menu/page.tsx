@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getMenu } from "@/lib/menu";
+import { getCurrentMenu } from "@/lib/menu";
 import { MenuServiceBlock } from "@/components/menu/menu-service";
 
 export const metadata: Metadata = {
@@ -9,8 +9,10 @@ export const metadata: Metadata = {
     "Menu midi et soir de Parvana — cuisine afghane à Nantes, faite maison, halal.",
 };
 
-export default function MenuPage() {
-  const menu = getMenu();
+export const revalidate = 60;
+
+export default async function MenuPage() {
+  const { menu } = await getCurrentMenu();
 
   return (
     <>
