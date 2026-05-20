@@ -1,0 +1,78 @@
+{
+  "midi": {
+    "active": true,
+    "intro": "Une cantine au fonctionnement simple : on choisit son ou ses plats soigneusement disposés derrière la vitrine, on règle, l'équipe se charge du reste. Tous les plats sont frais, faits maison, halal, composés d'ingrédients naturels et de qualité.",
+    "formule": "Formule entrée + plat ou plat + dessert — 15,50€",
+    "categories": [
+      {
+        "title": "Entrées",
+        "items": [
+          {
+            "name": "Borani Banjan",
+            "description": "Aubergines mijotées dans une sauce tomate parfumée, dressées sur un lit de yaourt à l'ail, finition de menthe séchée et grenade.",
+            "price": null,
+            "tags": ["végétarien"]
+          },
+          {
+            "name": "Kaddo Bourani",
+            "description": "Citrouille rôtie au four jusqu'à caramélisation, nappée de yaourt à l'ail et menthe fraîche. Une douceur fumée, signature des tables afghanes.",
+            "price": null,
+            "tags": ["végétarien"]
+          },
+          {
+            "name": "Shorwa",
+            "description": "Soupe traditionnelle afghane mijotée aux légumes-racines, pois chiches et herbes — à la fois rustique et profondément réconfortante.",
+            "price": null,
+            "tags": ["soupe"]
+          },
+          {
+            "name": "Saabzi",
+            "description": "Épinards afghans longuement mijotés aux herbes fraîches, aneth, coriandre, piment vert. Une verdeur profonde et parfumée.",
+            "price": null,
+            "tags": ["végétarien"]
+          }
+        ]
+      },
+      {
+        "title": "Plats",
+        "items": [
+          {
+            "name": "Kabuli Pulao",
+            "description": "Le plat national afghan. Riz basmati pilaf délicatement épicé, lit de carottes confites, raisins secs gonflés et amandes effilées.",
+            "price": null,
+            "tags": ["signature"]
+          },
+          {
+            "name": "Mantu",
+            "description": "Petits raviolis afghans pliés à la main, farcis à la viande hachée et oignons. Servis sous une nappe de yaourt à l'ail et sauce tomate-pois chiches.",
+            "price": null,
+            "tags": ["fait maison"]
+          },
+          {
+            "name": "Kumpir Turc",
+            "description": "Pomme de terre cuite au four, fourrée mozzarella et courgette grillée, purée de légumes, pickles de chou rouge, sauce maison au céleri.",
+            "price": null,
+            "tags": ["végétarien"]
+          }
+        ]
+      },
+      {
+        "title": "Desserts",
+        "items": [
+          {
+            "name": "Halwa Fleur d'Oranger",
+            "description": "Semoule dorée au beurre clarifié, parfumée à la fleur d'oranger, surface étoilée d'amandes et de pistaches concassées.",
+            "price": null,
+            "tags": ["végétarien"]
+          }
+        ]
+      }
+    ]
+  },
+  "soir": {
+    "active": false,
+    "intro": "Le menu du soir sera annoncé prochainement. Pour le moment, le restaurant n'est ouvert qu'au déjeuner.",
+    "formule": null,
+    "categories": []
+  }
+}
