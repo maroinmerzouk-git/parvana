@@ -111,3 +111,42 @@ export function maryamNotificationEmail(
   );
   return { subject, html };
 }
+
+export function clientConfirmationEmail(d: ReservationEmailData): {
+  subject: string;
+  html: string;
+} {
+  const subject = `Votre table chez Parvana est confirmée — ${formatFrenchDate(d.date)}`;
+  const html = wrapper(
+    subject,
+    `<h1 style="font-size:24px;margin:0 0 16px 0;font-weight:500;">Bonjour ${escapeHtml(d.name.split(" ")[0])},</h1>
+     <p style="margin:0 0 16px 0;">Votre réservation est <strong style="color:${COLORS.terracotta};">confirmée</strong> :</p>
+     <ul style="margin:0 0 20px 0;padding:0;list-style:none;">
+       <li style="padding:4px 0;font-size:16px;">📅 ${escapeHtml(formatFrenchDate(d.date))}</li>
+       <li style="padding:4px 0;font-size:16px;">🕒 ${escapeHtml(formatFrenchTime(d.arrivalTime))} (${d.service === "midi" ? "déjeuner" : "dîner"})</li>
+       <li style="padding:4px 0;font-size:16px;">👥 ${d.partySize} ${d.partySize > 1 ? "personnes" : "personne"}</li>
+     </ul>
+     <p style="margin:0 0 16px 0;">À très vite chez Parvana — 8 Boulevard Gisèle Halimi, 44200 Nantes.</p>
+     <p style="margin:16px 0 0 0;color:${COLORS.inkSoft};font-size:13px;">En cas d'empêchement, prévenez-nous au 06 22 64 32 53.</p>`,
+  );
+  return { subject, html };
+}
+
+export function clientRejectionEmail(
+  d: ReservationEmailData,
+  rejectionMessage?: string | null,
+): { subject: string; html: string } {
+  const subject = "Votre demande de réservation chez Parvana";
+  const customNote = rejectionMessage?.trim()
+    ? `<p style="margin:0 0 16px 0;background:${COLORS.beige};border-left:3px solid ${COLORS.terracotta};padding:12px 16px;font-size:14px;">${escapeHtml(rejectionMessage.trim())}</p>`
+    : "";
+  const html = wrapper(
+    subject,
+    `<h1 style="font-size:24px;margin:0 0 16px 0;font-weight:500;">Bonjour ${escapeHtml(d.name.split(" ")[0])},</h1>
+     <p style="margin:0 0 16px 0;">Nous sommes désolés, nous ne pouvons malheureusement pas honorer votre demande pour le <strong>${escapeHtml(formatFrenchDate(d.date))} à ${escapeHtml(formatFrenchTime(d.arrivalTime))}</strong>.</p>
+     ${customNote}
+     <p style="margin:0 0 16px 0;">N'hésitez pas à nous appeler au <a href="tel:+33622643253" style="color:${COLORS.terracotta};">06 22 64 32 53</a> pour trouver une autre date — ou à nous écrire directement.</p>
+     <p style="margin:16px 0 0 0;color:${COLORS.inkSoft};font-size:13px;">À très bientôt, nous l'espérons.</p>`,
+  );
+  return { subject, html };
+}

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
+import { frFR } from "@clerk/localizations";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -33,8 +35,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr" className={`${fraunces.variable} ${manrope.variable}`}>
-      <body className="min-h-dvh bg-beige text-ink font-body">{children}</body>
-    </html>
+    <ClerkProvider localization={frFR}>
+      <html lang="fr" className={`${fraunces.variable} ${manrope.variable}`}>
+        <body className="min-h-dvh bg-beige text-ink font-body">
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
