@@ -79,9 +79,11 @@ export function MenuServiceBlock({
                           </span>
                         ))}
                       </div>
-                      <p className="mt-2 max-w-prose text-ink-soft">
-                        {item.description}
-                      </p>
+                      {item.description && (
+                        <p className="mt-2 max-w-prose text-ink-soft">
+                          {item.description}
+                        </p>
+                      )}
                     </div>
                     {item.price && (
                       <span className="font-display text-xl text-terracotta md:text-right md:text-2xl">

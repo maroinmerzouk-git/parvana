@@ -70,9 +70,216 @@
     ]
   },
   "soir": {
-    "active": false,
-    "intro": "Le menu du soir sera annoncé prochainement. Pour le moment, le restaurant n'est ouvert qu'au déjeuner.",
-    "formule": null,
-    "categories": []
+    "active": true,
+    "intro": "Une carte composée d'entrées, de plats traditionnels afghans et de desserts maison, accompagnée d'une sélection de cocktails, limonades maison et boissons chaudes.",
+    "formule": "Formule entrée + plat + dessert — 30€",
+    "categories": [
+      {
+        "title": "Entrées",
+        "items": [
+          {
+            "name": "Pakawra Afghan",
+            "description": "Beignets de légumes avec crème de fromage frais.",
+            "price": "7€",
+            "tags": ["végétarien"]
+          },
+          {
+            "name": "Salataa",
+            "description": "Salade à base de pain avec tomates, oignons, herbes fraîches, zaatar et huile d'olive.",
+            "price": "6,50€",
+            "tags": ["végétarien"]
+          },
+          {
+            "name": "Houmous",
+            "description": "Pois chiches au paprika et olives, servi avec du pain.",
+            "price": "7€",
+            "tags": ["végétarien"]
+          }
+        ]
+      },
+      {
+        "title": "Plats",
+        "items": [
+          {
+            "name": "Qabuli Palaw",
+            "description": "Riz aux carottes et raisins, accompagné de kefta de bœuf.",
+            "price": "19€",
+            "tags": ["signature"]
+          },
+          {
+            "name": "Zereshk Polo",
+            "description": "Riz au safran, baie d'épine-vinette, accompagné de poulet.",
+            "price": "19€"
+          },
+          {
+            "name": "Viande grillée",
+            "description": "Servie avec des pâtes au beurre et des sauces maison.",
+            "price": "24€"
+          },
+          {
+            "name": "Badenjan",
+            "description": "Aubergines et poivrons grillés, sauce yaourt, pain maison.",
+            "price": "15,50€",
+            "tags": ["végétarien"]
+          },
+          {
+            "name": "Ay khanom",
+            "description": "Ravioles aux légumes, sauce tomate et sauce yaourt.",
+            "price": "16,50€",
+            "tags": ["végétarien", "fait maison"]
+          }
+        ]
+      },
+      {
+        "title": "Desserts",
+        "items": [
+          {
+            "name": "Crème Rolls",
+            "description": "Feuilleté à la crème citron.",
+            "price": "7€"
+          },
+          {
+            "name": "Baklava",
+            "description": "Pistache, sirop de rose.",
+            "price": "8€"
+          },
+          {
+            "name": "Ferni",
+            "description": "Lait, fleur de maïs et fruits.",
+            "price": "7€"
+          },
+          {
+            "name": "Glace",
+            "description": "Vanille, pistache et cardamome.",
+            "price": "6,50€"
+          }
+        ]
+      },
+      {
+        "title": "Cocktails",
+        "items": [
+          {
+            "name": "Lahla",
+            "description": "Grenade, framboise, citron, menthe.",
+            "price": "8€"
+          },
+          {
+            "name": "Rosea",
+            "description": "Pêche, fraise, lavande, pétales de rose.",
+            "price": "8€"
+          },
+          {
+            "name": "Monarque",
+            "description": "Passion, ananas, basilic.",
+            "price": "8€"
+          }
+        ]
+      },
+      {
+        "title": "Limonades maison",
+        "items": [
+          {
+            "name": "Citron, abricot",
+            "description": "",
+            "price": "5€"
+          },
+          {
+            "name": "Citron, fraise",
+            "description": "",
+            "price": "5€"
+          },
+          {
+            "name": "Citron, menthe",
+            "description": "",
+            "price": "5€"
+          }
+        ]
+      },
+      {
+        "title": "Bouteille UMA 33 cl",
+        "items": [
+          {
+            "name": "IPA Soda",
+            "description": "",
+            "price": "4,50€"
+          },
+          {
+            "name": "Limonade",
+            "description": "",
+            "price": "4,50€"
+          },
+          {
+            "name": "Ginger beer",
+            "description": "",
+            "price": "4,50€"
+          },
+          {
+            "name": "PET'NAT' Rosé",
+            "description": "",
+            "price": "4,50€"
+          },
+          {
+            "name": "PET'NAT' Blanc",
+            "description": "",
+            "price": "4,50€"
+          },
+          {
+            "name": "Eau pétillante",
+            "description": "",
+            "price": "3,50€"
+          }
+        ]
+      },
+      {
+        "title": "Boissons chaudes",
+        "items": [
+          {
+            "name": "Thé vert cardamome",
+            "description": "",
+            "price": "3,50€"
+          },
+          {
+            "name": "Thé menthe",
+            "description": "",
+            "price": "3,50€"
+          },
+          {
+            "name": "Thé noir",
+            "description": "",
+            "price": "3,50€"
+          },
+          {
+            "name": "Thé jasmin",
+            "description": "",
+            "price": "3,50€"
+          },
+          {
+            "name": "Infusion camomille",
+            "description": "",
+            "price": "3,50€"
+          },
+          {
+            "name": "Infusion fruité",
+            "description": "",
+            "price": "3,50€"
+          },
+          {
+            "name": "Café allongé",
+            "description": "",
+            "price": "3,50€"
+          },
+          {
+            "name": "Café au lait",
+            "description": "",
+            "price": "3,50€"
+          },
+          {
+            "name": "Chocolat chaud",
+            "description": "",
+            "price": "3,50€"
+          }
+        ]
+      }
+    ]
   }
 }
