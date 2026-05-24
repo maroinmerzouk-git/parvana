@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb, schema } from "@/db";
+import { ADMIN_COOKIE, verifySession } from "@/lib/admin-auth";
 import {
   adminAddress,
   fromAddress,
@@ -22,16 +23,13 @@ const rejectSchema = z.object({
   message: z.string().trim().max(500).optional(),
 });
 
-async function requireAuth() {
-  const { userId } = await auth();
-  if (!userId) {
+async function requireAuth(): Promise<string> {
+  const jar = await cookies();
+  const cookie = jar.get(ADMIN_COOKIE)?.value;
+  if (!(await verifySession(cookie))) {
     throw new Error("Non authentifié");
   }
-  const allowed = process.env.ADMIN_EMAIL;
-  if (!allowed) {
-    throw new Error("ADMIN_EMAIL non configuré");
-  }
-  return userId;
+  return "admin";
 }
 
 type Reservation = typeof schema.reservations.$inferSelect;

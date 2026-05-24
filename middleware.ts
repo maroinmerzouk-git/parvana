@@ -1,24 +1,19 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { ADMIN_COOKIE, verifySession } from "@/lib/admin-auth";
 
-const isProtectedRoute = createRouteMatcher(["/admin(.*)"]);
-const isPublicAdminRoute = createRouteMatcher([
-  "/admin/login(.*)",
-  "/admin/sso-callback(.*)",
-]);
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
-export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req) && !isPublicAdminRoute(req)) {
-    await auth.protect({
-      unauthenticatedUrl: new URL("/admin/login", req.url).toString(),
-    });
-  }
-});
+  if (pathname.startsWith("/admin/login")) return NextResponse.next();
+
+  const cookie = req.cookies.get(ADMIN_COOKIE)?.value;
+  if (await verifySession(cookie)) return NextResponse.next();
+
+  const loginUrl = new URL("/admin/login", req.url);
+  if (pathname !== "/admin") loginUrl.searchParams.set("next", pathname);
+  return NextResponse.redirect(loginUrl);
+}
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and static files
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/(api|trpc)(.*)",
-  ],
+  matcher: ["/admin/:path*"],
 };

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
 import { and, eq, isNull } from "drizzle-orm";
 import { getDb, schema } from "@/db";
+import { logoutAdmin } from "@/app/admin/auth-actions";
 
 async function getUnreadCounts(): Promise<{
   reservations: number;
@@ -86,14 +86,15 @@ export async function AdminNav() {
             Menu
           </Link>
 
-          <div className="ml-2">
-            <UserButton
-              appearance={{
-                elements: { avatarBox: "h-8 w-8" },
-                variables: { colorPrimary: "#B5482A" },
-              }}
-            />
-          </div>
+          <form action={logoutAdmin} className="ml-2">
+            <button
+              type="submit"
+              className="rounded-full px-3 py-2 text-ink-soft hover:text-terracotta"
+              aria-label="Se déconnecter"
+            >
+              Quitter
+            </button>
+          </form>
         </nav>
       </div>
     </header>
