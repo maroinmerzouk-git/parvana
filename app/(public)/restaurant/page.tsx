@@ -5,7 +5,7 @@ import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
 export const metadata: Metadata = {
   title: "Le restaurant",
   description:
-    "L'histoire de Parvana, cantine afghane portée par Maryam Farid, à Nantes.",
+    "Parvana, restaurant d'Asie centrale sur l'Île de Nantes — cuisine afghane, iranienne, ouzbèke, turque et tadjike, faite maison.",
 };
 
 export default function RestaurantPage() {
@@ -19,47 +19,42 @@ export default function RestaurantPage() {
           <h1 className="mt-6 font-display text-5xl leading-[0.95] text-ink md:text-7xl">
             <span className="italic">Parvana,</span>
             <br />
-            <span className="text-terracotta italic">papillon</span> en persan.
+            un voyage en{" "}
+            <span className="text-terracotta italic">Asie centrale</span>.
           </h1>
           <p className="mt-8 max-w-2xl text-xl text-ink-soft md:text-2xl">
-            Une cantine d&apos;Asie Centrale ouverte en juin 2025 sur l&apos;Île
-            de Nantes. Un nom emprunté à une héroïne littéraire — et porté par
-            une cheffe qui en prolonge le geste.
+            Bienvenue chez Parvana, un lieu de partage et de découverte au cœur
+            de l&apos;Île de Nantes. Une cuisine inspirée des traditions
+            iraniennes, afghanes, turques, ouzbèkes et tadjikes.
           </p>
         </div>
       </section>
 
       <section className="border-b border-ink/10">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-[1fr_1.4fr] md:gap-16 md:px-10 md:py-24">
-          {/* TODO: remplacer par la photo fournie par la cliente — sujet: portrait Maryam */}
-          <PhotoPlaceholder description="portrait · Maryam" aspectRatio="3/4" />
+          {/* TODO: remplacer par la photo fournie par la cliente — sujet: vitrine ou plat signature */}
+          <PhotoPlaceholder description="cuisine · vitrine" aspectRatio="3/4" />
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
-              L&apos;origine du nom
+              Notre cuisine
             </p>
             <h2 className="mt-4 font-display text-3xl italic leading-tight text-ink md:text-4xl">
-              Une enfant de onze ans, et beaucoup de courage.
+              Frais, fait maison, transmis.
             </h2>
             <div className="mt-6 space-y-4 text-lg text-ink-soft">
               <p>
-                Parvana, c&apos;est d&apos;abord le nom d&apos;une héroïne
-                littéraire. Une petite fille afghane de onze ans qui, sous le
-                régime des talibans, coupa ses cheveux et se fit passer pour un
-                garçon afin de faire vivre sa famille.
+                Chaque jour, nos plats frais et faits maison sont préparés avec
+                des produits locaux et de saison. Présentés en vitrine, ils
+                permettent de découvrir simplement une cuisine généreuse,
+                familiale et authentique.
               </p>
               <p>
-                Son courage a inspiré Maryam — jeune cheffe afghane — à donner
-                ce nom à son projet. Une cantine ouverte en juin 2025 sur
-                l&apos;Île de Nantes, qui s&apos;étend bien au-delà de
-                l&apos;assiette.
+                Plats mijotés, riz afghan, spécialités végétariennes, recettes
+                traditionnelles et pâtisseries création de cheffe — notre cuisine
+                met à l&apos;honneur des recettes transmises et revisitées avec
+                sincérité.
               </p>
             </div>
-            <blockquote className="mt-8 border-l-2 border-terracotta pl-6 font-display text-2xl italic leading-snug text-ink">
-              « Je suis Maryam, Afghane, et je suis engagée pour la liberté des
-              femmes. La cuisine fait partie de mon histoire — c&apos;est, pour
-              moi, la plus magique des recettes pour communiquer mon
-              engagement. »
-            </blockquote>
           </div>
         </div>
       </section>
@@ -69,30 +64,101 @@ export default function RestaurantPage() {
           <div className="grid gap-12 md:grid-cols-[1.4fr_1fr] md:gap-16">
             <div>
               <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
-                Le parcours
+                L&apos;ambiance
               </p>
               <h2 className="mt-4 font-display text-3xl italic leading-tight text-ink md:text-4xl">
-                De Fair-e à Parvana, dix ans de cuisine partagée.
+                Une table accessible, un moment à partager.
               </h2>
               <div className="mt-6 space-y-4 text-lg text-ink-soft">
                 <p>
-                  Maryam a appris à Nantes — d&apos;abord au restaurant
-                  associatif <strong className="text-ink">Fair-e</strong>, lieu
-                  d&apos;insertion et de transmission, puis dans les foodhalls{" "}
-                  <strong className="text-ink">Magmaa</strong> et{" "}
-                  <strong className="text-ink">Carquefood</strong>, où elle
-                  affine sa cuisine afghane au contact du public.
+                  Chez Parvana, nous souhaitons rendre cette cuisine accessible
+                  à tous grâce à des prix raisonnables et une ambiance
+                  conviviale. Le restaurant est pensé comme un lieu chaleureux
+                  où l&apos;on vient autant pour manger que pour partager un
+                  moment humain.
                 </p>
                 <p>
-                  Parvana est son premier lieu en propre. Une cantine sur
-                  l&apos;Île de Nantes, ouverte du mardi au dimanche, où les
-                  plats — pulao, mantu, borani, halwa — sont préparés chaque
-                  matin et présentés derrière la vitrine.
+                  La décoration, inspirée des cultures d&apos;Asie centrale,
+                  mêle artisanat, tissus traditionnels et objets faits à la
+                  main pour créer une atmosphère authentique et dépaysante.
                 </p>
               </div>
             </div>
-            {/* TODO: remplacer par la photo fournie par la cliente — sujet: salle du restaurant, lumière du jour */}
-            <PhotoPlaceholder description="salle · lumière" aspectRatio="4/5" />
+            {/* TODO: remplacer par la photo fournie par la cliente — sujet: salle, textiles, suspensions */}
+            <PhotoPlaceholder description="salle · textiles" aspectRatio="4/5" />
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-ink/10">
+        <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-[1fr_1.4fr] md:gap-16 md:px-10 md:py-24">
+          {/* TODO: remplacer par la photo fournie par la cliente — sujet: portrait Maryam ou détail livre Parvana */}
+          <PhotoPlaceholder description="portrait · Maryam" aspectRatio="3/4" />
+          <div>
+            <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
+              L&apos;histoire de Parvana
+            </p>
+            <h2 className="mt-4 font-display text-3xl italic leading-tight text-ink md:text-4xl">
+              Un récit, un refuge, un projet.
+            </h2>
+            <div className="mt-6 space-y-4 text-lg text-ink-soft">
+              <p>
+                Parvana est avant tout le nom d&apos;un récit inspirant
+                racontant l&apos;histoire d&apos;une jeune fille courageuse en
+                Afghanistan. Dans un contexte difficile, elle aide sa famille
+                avec force et détermination malgré les interdictions et les
+                obstacles imposés aux femmes et aux enfants.
+              </p>
+              <p>
+                Ce nom est devenu le symbole du restaurant&nbsp;: un
+                lieu-refuge où l&apos;on peut se retrouver, partager, créer et
+                aider.
+              </p>
+              <p>
+                L&apos;aventure Parvana commence en 2023 au{" "}
+                <strong className="text-ink">Magmaa Food Hall</strong>, puis se
+                poursuit au{" "}
+                <strong className="text-ink">Carquefoodhall</strong> avant
+                l&apos;ouverture du restaurant sur l&apos;Île de Nantes. Depuis
+                le début, le projet porte l&apos;envie de faire découvrir les
+                cultures et les cuisines d&apos;Asie centrale à travers un lieu
+                chaleureux et authentique.
+              </p>
+              <p>
+                Aujourd&apos;hui, Parvana est à la fois un restaurant, un lieu
+                culturel et un projet solidaire porté par des valeurs de
+                partage, de transmission et d&apos;humanité.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-ink/10 bg-sand">
+        <div className="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-24">
+          <div className="grid gap-12 md:grid-cols-[1.4fr_1fr] md:gap-16">
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
+                Service traiteur
+              </p>
+              <h2 className="mt-4 font-display text-3xl italic leading-tight text-ink md:text-4xl">
+                Parvana chez vous.
+              </h2>
+              <p className="mt-6 text-lg text-ink-soft">
+                Parvana propose un service traiteur sur mesure pour vos
+                événements privés ou professionnels&nbsp;: buffets, repas de
+                groupe, cocktails dînatoires et bouchées apéritives inspirées
+                des saveurs d&apos;Asie centrale.
+              </p>
+              <Link
+                href="/traiteur"
+                className="mt-8 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.18em] text-terracotta hover:text-terracotta-dark"
+              >
+                Demander un devis →
+              </Link>
+            </div>
+            {/* TODO: remplacer par la photo fournie par la cliente — sujet: plateau traiteur ou buffet */}
+            <PhotoPlaceholder description="traiteur · buffet" aspectRatio="4/5" />
           </div>
         </div>
       </section>
@@ -100,9 +166,9 @@ export default function RestaurantPage() {
       <section className="border-b border-ink/10">
         <div className="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-24">
           <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:gap-16">
-            {/* TODO: remplacer par la photo fournie par la cliente — sujet: équipe en cuisine ou détail des suspensions textiles */}
+            {/* TODO: remplacer par la photo fournie par la cliente — sujet: artisanat / objets faits main */}
             <PhotoPlaceholder
-              description="équipe / textiles"
+              description="artisanat · textiles"
               aspectRatio="3/4"
             />
             <div>
@@ -114,11 +180,10 @@ export default function RestaurantPage() {
               </h2>
               <div className="mt-6 space-y-4 text-lg text-ink-soft">
                 <p>
-                  Parvana est aussi un projet associatif : soutenir les femmes
-                  et les enfants sans-abris d&apos;Asie Centrale, et valoriser
-                  le savoir-faire artisanal des femmes afghanes — qui ont
-                  fabriqué, à la main, l&apos;ensemble des suspensions textiles
-                  qui habitent le restaurant.
+                  Parvana est un restaurant engagé qui soutient des actions
+                  solidaires en faveur des femmes et des enfants sans abri en
+                  Asie centrale. Une partie des revenus du restaurant et des
+                  événements est reversée à l&apos;association.
                 </p>
                 <p>
                   Chaque assiette servie ici raconte un fragment de cette
