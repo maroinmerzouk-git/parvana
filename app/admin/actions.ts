@@ -199,3 +199,31 @@ export async function saveMenu(rawJson: string): Promise<SaveMenuResult> {
   revalidatePath("/admin/menu");
   return { ok: true, version: row.version };
 }
+
+export async function markCateringSeen(rawId: string) {
+  await requireAuth();
+  const id = idSchema.parse(rawId);
+  const db = getDb();
+
+  await db
+    .update(schema.cateringRequests)
+    .set({ status: "seen", seenAt: new Date() })
+    .where(eq(schema.cateringRequests.id, id));
+
+  revalidatePath("/admin/catering");
+  return { ok: true };
+}
+
+export async function archiveCateringRequest(rawId: string) {
+  await requireAuth();
+  const id = idSchema.parse(rawId);
+  const db = getDb();
+
+  await db
+    .update(schema.cateringRequests)
+    .set({ status: "archived", seenAt: new Date() })
+    .where(eq(schema.cateringRequests.id, id));
+
+  revalidatePath("/admin/catering");
+  return { ok: true };
+}

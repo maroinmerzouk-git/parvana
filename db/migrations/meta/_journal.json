@@ -15,6 +15,13 @@
       "when": 1779295349626,
       "tag": "0001_menus",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779645336244,
+      "tag": "0002_catering_requests",
+      "breakpoints": true
     }
   ]
 }

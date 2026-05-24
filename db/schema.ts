@@ -75,3 +75,46 @@ export const menus = pgTable(
 
 export type MenuRow = typeof menus.$inferSelect;
 export type NewMenuRow = typeof menus.$inferInsert;
+
+export const cateringRequests = pgTable(
+  "catering_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    phone: text("phone").notNull(),
+
+    eventDate: date("event_date").notNull(),
+    eventType: text("event_type").notNull(),
+    partySize: integer("party_size").notNull(),
+    budget: text("budget"),
+    message: text("message"),
+
+    status: text("status").notNull().default("new"),
+    seenAt: timestamp("seen_at", { withTimezone: true }),
+    clientEmailSent: boolean("client_email_sent").notNull().default(false),
+  },
+  (t) => [
+    check(
+      "catering_event_type_check",
+      sql`${t.eventType} in ('mariage', 'anniversaire', 'entreprise', 'autre')`,
+    ),
+    check(
+      "catering_status_check",
+      sql`${t.status} in ('new', 'seen', 'archived')`,
+    ),
+    check(
+      "catering_party_size_check",
+      sql`${t.partySize} between 10 and 500`,
+    ),
+    index("catering_status_created_at_idx").on(t.status, t.createdAt.desc()),
+    index("catering_created_at_idx").on(t.createdAt.desc()),
+  ],
+);
+
+export type CateringRequest = typeof cateringRequests.$inferSelect;
+export type NewCateringRequest = typeof cateringRequests.$inferInsert;

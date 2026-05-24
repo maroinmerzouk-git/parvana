@@ -3,26 +3,36 @@ import { UserButton } from "@clerk/nextjs";
 import { and, eq, isNull } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 
-async function getUnreadCount(): Promise<number> {
+async function getUnreadCounts(): Promise<{
+  reservations: number;
+  catering: number;
+}> {
   try {
     const db = getDb();
-    const rows = await db
-      .select({ id: schema.reservations.id })
-      .from(schema.reservations)
-      .where(
-        and(
-          eq(schema.reservations.status, "pending"),
-          isNull(schema.reservations.seenAt),
+    const [resRows, cateringRows] = await Promise.all([
+      db
+        .select({ id: schema.reservations.id })
+        .from(schema.reservations)
+        .where(
+          and(
+            eq(schema.reservations.status, "pending"),
+            isNull(schema.reservations.seenAt),
+          ),
         ),
-      );
-    return rows.length;
+      db
+        .select({ id: schema.cateringRequests.id })
+        .from(schema.cateringRequests)
+        .where(eq(schema.cateringRequests.status, "new")),
+    ]);
+    return { reservations: resRows.length, catering: cateringRows.length };
   } catch {
-    return 0;
+    return { reservations: 0, catering: 0 };
   }
 }
 
 export async function AdminNav() {
-  const unread = await getUnreadCount();
+  const { reservations: unread, catering: unreadCatering } =
+    await getUnreadCounts();
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-sand/95 backdrop-blur">
@@ -50,6 +60,21 @@ export async function AdminNav() {
                 className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-terracotta px-1.5 text-[10px] font-medium text-beige"
               >
                 {unread}
+              </span>
+            )}
+          </Link>
+
+          <Link
+            href="/admin/catering"
+            className="relative rounded-full px-3 py-2 text-ink hover:bg-beige"
+          >
+            Traiteur
+            {unreadCatering > 0 && (
+              <span
+                aria-label={`${unreadCatering} non lue${unreadCatering > 1 ? "s" : ""}`}
+                className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-terracotta px-1.5 text-[10px] font-medium text-beige"
+              >
+                {unreadCatering}
               </span>
             )}
           </Link>
