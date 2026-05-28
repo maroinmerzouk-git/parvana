@@ -13,6 +13,17 @@ export function ReservationCard({
 }) {
   const unread = r.status === "pending" && !r.seenAt;
 
+  // Surface when the customer-facing email for the current status never went
+  // out (e.g. Resend rejected the send). Each status maps to its own email.
+  const emailFailedLabel =
+    r.status === "pending" && !r.clientEmailSent
+      ? "Accusé non envoyé"
+      : r.status === "confirmed" && !r.confirmationEmailSent
+        ? "Confirmation non envoyée"
+        : r.status === "rejected" && !r.rejectionEmailSent
+          ? "Refus non envoyé"
+          : null;
+
   return (
     <article
       className={cn(
@@ -32,6 +43,15 @@ export function ReservationCard({
             <span className="text-[10px] uppercase tracking-[0.14em] text-ink-soft">
               {r.service === "midi" ? "Déjeuner" : "Dîner"}
             </span>
+            {emailFailedLabel && (
+              <span
+                title="L'email destiné au client n'a pas pu être envoyé. Pensez à prévenir le client par téléphone."
+                className="inline-flex items-center gap-1 rounded-full border border-amber-600/40 bg-amber-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-amber-900"
+              >
+                <span aria-hidden>⚠</span>
+                {emailFailedLabel}
+              </span>
+            )}
           </div>
           <h3 className="mt-2 font-display text-2xl italic leading-tight text-ink">
             {r.name}
