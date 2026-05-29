@@ -32,6 +32,25 @@ export function MenuServiceBlock({
     );
   }
 
+  // Menu « formule seule » : pas de carte détaillée, on met l'intitulé en avant.
+  if (service.categories.length === 0) {
+    return (
+      <section className="border-b border-ink/10">
+        <div className="mx-auto max-w-4xl px-6 py-20 md:px-10 md:py-24">
+          <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
+            Menu {label}
+          </p>
+          <h2 className="mt-4 font-display text-4xl italic leading-tight text-ink md:text-5xl">
+            {service.formule || "À l'ardoise"}
+          </h2>
+          {service.intro && (
+            <p className="mt-6 max-w-2xl text-ink-soft">{service.intro}</p>
+          )}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="border-b border-ink/10">
       <div className="mx-auto max-w-5xl px-6 py-20 md:px-10 md:py-24">

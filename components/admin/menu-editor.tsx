@@ -2,8 +2,17 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { saveMenu } from "@/app/admin/actions";
+import { menuTagSchema } from "@/lib/schemas/menu";
+import type { Menu, MenuService, MenuTag } from "@/lib/menu";
+
+type Mode = "carte" | "formule";
+
+const TAGS = menuTagSchema.options;
 
 type SaveState =
   | { kind: "idle" }
@@ -11,22 +20,73 @@ type SaveState =
   | { kind: "success"; version: number }
   | { kind: "error"; message: string; details?: unknown };
 
+function modeFor(service: MenuService): Mode {
+  return service.categories.length > 0 ? "carte" : "formule";
+}
+
+/** Build the payload for one service, dropping carte details in formule mode. */
+function normalize(service: MenuService, mode: Mode): MenuService {
+  if (mode === "formule") {
+    return {
+      active: service.active,
+      intro: "",
+      formule: service.formule ?? "",
+      categories: [],
+    };
+  }
+  return service;
+}
+
 export function MenuEditor({
-  initialJson,
+  initialMenu,
   initialVersion,
   source,
 }: {
-  initialJson: string;
+  initialMenu: Menu;
   initialVersion: number | null;
   source: "db" | "fallback";
 }) {
-  const [json, setJson] = React.useState(initialJson);
+  const [midi, setMidi] = React.useState<MenuService>(initialMenu.midi);
+  const [soir, setSoir] = React.useState<MenuService>(initialMenu.soir);
+  const [midiMode, setMidiMode] = React.useState<Mode>(modeFor(initialMenu.midi));
+  const [soirMode, setSoirMode] = React.useState<Mode>(modeFor(initialMenu.soir));
   const [state, setState] = React.useState<SaveState>({ kind: "idle" });
+
+  const dirty = () => {
+    if (state.kind !== "idle") setState({ kind: "idle" });
+  };
+
+  const reset = () => {
+    setMidi(initialMenu.midi);
+    setSoir(initialMenu.soir);
+    setMidiMode(modeFor(initialMenu.midi));
+    setSoirMode(modeFor(initialMenu.soir));
+    setState({ kind: "idle" });
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Un menu actif en mode « formule seule » a besoin d'un intitulé.
+    for (const [svc, mode, label] of [
+      [midi, midiMode, "midi"],
+      [soir, soirMode, "soir"],
+    ] as const) {
+      if (svc.active && mode === "formule" && !(svc.formule ?? "").trim()) {
+        setState({
+          kind: "error",
+          message: `Le menu ${label} est actif en « formule seule » : indiquez l'intitulé de la formule.`,
+        });
+        return;
+      }
+    }
+
     setState({ kind: "saving" });
-    const result = await saveMenu(json);
+    const menu: Menu = {
+      midi: normalize(midi, midiMode),
+      soir: normalize(soir, soirMode),
+    };
+    const result = await saveMenu(JSON.stringify(menu));
     if (result.ok) {
       setState({ kind: "success", version: result.version });
     } else {
@@ -39,26 +99,46 @@ export function MenuEditor({
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.14em] text-ink-soft">
-        <span>
-          {source === "db" ? (
-            <>Version actuelle&nbsp;: <strong className="text-ink">v{initialVersion}</strong></>
-          ) : (
-            "Pas encore de version en base — affichage du JSON par défaut"
-          )}
-        </span>
-      </div>
+    <form onSubmit={onSubmit} className="space-y-8">
+      <p className="text-xs uppercase tracking-[0.14em] text-ink-soft">
+        {source === "db" ? (
+          <>
+            Version actuelle&nbsp;:{" "}
+            <strong className="text-ink">v{initialVersion}</strong>
+          </>
+        ) : (
+          "Pas encore de version en base — valeurs par défaut affichées"
+        )}
+      </p>
 
-      <Textarea
-        value={json}
-        onChange={(e) => {
-          setJson(e.target.value);
-          if (state.kind !== "idle") setState({ kind: "idle" });
+      <ServiceEditor
+        label="Menu midi"
+        idPrefix="midi"
+        value={midi}
+        mode={midiMode}
+        onChange={(next) => {
+          setMidi(next);
+          dirty();
         }}
-        className="min-h-[480px] font-mono text-xs leading-relaxed"
-        spellCheck={false}
-        aria-label="Contenu JSON du menu"
+        onModeChange={(m) => {
+          setMidiMode(m);
+          dirty();
+        }}
+      />
+
+      <ServiceEditor
+        label="Menu soir"
+        idPrefix="soir"
+        value={soir}
+        mode={soirMode}
+        onChange={(next) => {
+          setSoir(next);
+          dirty();
+        }}
+        onModeChange={(m) => {
+          setSoirMode(m);
+          dirty();
+        }}
       />
 
       {state.kind === "error" && (
@@ -88,8 +168,8 @@ export function MenuEditor({
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setJson(initialJson)}
-            disabled={json === initialJson || state.kind === "saving"}
+            onClick={reset}
+            disabled={state.kind === "saving"}
           >
             Réinitialiser
           </Button>
@@ -99,5 +179,259 @@ export function MenuEditor({
         </div>
       </div>
     </form>
+  );
+}
+
+function ServiceEditor({
+  label,
+  idPrefix,
+  value,
+  mode,
+  onChange,
+  onModeChange,
+}: {
+  label: string;
+  idPrefix: string;
+  value: MenuService;
+  mode: Mode;
+  onChange: (next: MenuService) => void;
+  onModeChange: (m: Mode) => void;
+}) {
+  const set = (patch: Partial<MenuService>) => onChange({ ...value, ...patch });
+
+  const setCategory = (index: number, patch: Partial<MenuService["categories"][number]>) =>
+    set({
+      categories: value.categories.map((c, i) =>
+        i === index ? { ...c, ...patch } : c,
+      ),
+    });
+
+  const setItem = (
+    catIndex: number,
+    itemIndex: number,
+    patch: Partial<MenuService["categories"][number]["items"][number]>,
+  ) =>
+    setCategory(catIndex, {
+      items: value.categories[catIndex].items.map((it, i) =>
+        i === itemIndex ? { ...it, ...patch } : it,
+      ),
+    });
+
+  const toggleTag = (catIndex: number, itemIndex: number, tag: MenuTag) => {
+    const current = value.categories[catIndex].items[itemIndex].tags ?? [];
+    const next = current.includes(tag)
+      ? current.filter((t) => t !== tag)
+      : [...current, tag];
+    setItem(catIndex, itemIndex, { tags: next });
+  };
+
+  return (
+    <fieldset className="rounded-lg border border-ink/15 bg-sand/40 p-4 md:p-6">
+      <legend className="px-2 font-display text-2xl italic text-ink">
+        {label}
+      </legend>
+
+      <label className="mt-2 flex items-center gap-3 text-sm text-ink">
+        <input
+          type="checkbox"
+          checked={value.active}
+          onChange={(e) => set({ active: e.target.checked })}
+          className="h-4 w-4 accent-terracotta"
+        />
+        Service actif (visible sur le site)
+      </label>
+
+      <div className="mt-5">
+        <Label className="mb-2 block">Type de menu</Label>
+        <RadioGroup
+          value={mode}
+          onValueChange={(v) => onModeChange(v as Mode)}
+          className="flex flex-wrap gap-x-6 gap-y-2"
+        >
+          <label className="flex items-center gap-2 text-sm text-ink">
+            <RadioGroupItem value="formule" />
+            Formule seule (intitulé uniquement)
+          </label>
+          <label className="flex items-center gap-2 text-sm text-ink">
+            <RadioGroupItem value="carte" />
+            Carte complète
+          </label>
+        </RadioGroup>
+      </div>
+
+      <div className="mt-5 space-y-2">
+        <Label htmlFor={`${idPrefix}-formule`}>Intitulé de la formule</Label>
+        <Input
+          id={`${idPrefix}-formule`}
+          value={value.formule ?? ""}
+          onChange={(e) => set({ formule: e.target.value })}
+          placeholder="Ex. : Formule entrée + plat ou plat + dessert — 15,50€"
+          maxLength={200}
+        />
+      </div>
+
+      {mode === "carte" && (
+        <div className="mt-6 space-y-6 border-t border-ink/10 pt-6">
+          <div className="space-y-2">
+            <Label htmlFor={`${idPrefix}-intro`}>Texte de présentation</Label>
+            <Textarea
+              id={`${idPrefix}-intro`}
+              value={value.intro}
+              onChange={(e) => set({ intro: e.target.value })}
+              className="min-h-[90px]"
+              maxLength={800}
+              placeholder="Quelques mots d'introduction au service…"
+            />
+          </div>
+
+          {value.categories.map((cat, ci) => (
+            <div
+              key={ci}
+              className="rounded-md border border-ink/10 bg-beige/60 p-4"
+            >
+              <div className="flex items-end gap-3">
+                <div className="flex-1 space-y-2">
+                  <Label htmlFor={`${idPrefix}-cat-${ci}`}>Catégorie</Label>
+                  <Input
+                    id={`${idPrefix}-cat-${ci}`}
+                    value={cat.title}
+                    onChange={(e) => setCategory(ci, { title: e.target.value })}
+                    placeholder="Entrées, Plats, Desserts…"
+                    maxLength={60}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    set({
+                      categories: value.categories.filter((_, i) => i !== ci),
+                    })
+                  }
+                >
+                  Supprimer
+                </Button>
+              </div>
+
+              <div className="mt-4 space-y-4">
+                {cat.items.map((item, ii) => (
+                  <div
+                    key={ii}
+                    className="space-y-3 rounded border border-ink/10 bg-sand/60 p-3"
+                  >
+                    <div className="flex items-end gap-3">
+                      <div className="flex-1 space-y-1">
+                        <Label htmlFor={`${idPrefix}-${ci}-${ii}-name`}>
+                          Nom du plat
+                        </Label>
+                        <Input
+                          id={`${idPrefix}-${ci}-${ii}-name`}
+                          value={item.name}
+                          onChange={(e) =>
+                            setItem(ci, ii, { name: e.target.value })
+                          }
+                          maxLength={120}
+                        />
+                      </div>
+                      <div className="w-28 space-y-1">
+                        <Label htmlFor={`${idPrefix}-${ci}-${ii}-price`}>
+                          Prix
+                        </Label>
+                        <Input
+                          id={`${idPrefix}-${ci}-${ii}-price`}
+                          value={item.price ?? ""}
+                          onChange={(e) =>
+                            setItem(ci, ii, { price: e.target.value })
+                          }
+                          placeholder="6€"
+                          maxLength={20}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setCategory(ci, {
+                            items: cat.items.filter((_, i) => i !== ii),
+                          })
+                        }
+                      >
+                        ✕
+                      </Button>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor={`${idPrefix}-${ci}-${ii}-desc`}>
+                        Description
+                      </Label>
+                      <Textarea
+                        id={`${idPrefix}-${ci}-${ii}-desc`}
+                        value={item.description}
+                        onChange={(e) =>
+                          setItem(ci, ii, { description: e.target.value })
+                        }
+                        className="min-h-[60px]"
+                        maxLength={500}
+                      />
+                    </div>
+
+                    <div className="flex flex-wrap gap-x-4 gap-y-1">
+                      {TAGS.map((tag) => (
+                        <label
+                          key={tag}
+                          className="flex items-center gap-1.5 text-xs text-ink-soft"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={item.tags?.includes(tag) ?? false}
+                            onChange={() => toggleTag(ci, ii, tag)}
+                            className="h-3.5 w-3.5 accent-terracotta"
+                          />
+                          {tag}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setCategory(ci, {
+                      items: [
+                        ...cat.items,
+                        { name: "", description: "", price: "", tags: [] },
+                      ],
+                    })
+                  }
+                >
+                  + Ajouter un plat
+                </Button>
+              </div>
+            </div>
+          ))}
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              set({
+                categories: [
+                  ...value.categories,
+                  { title: "", items: [] },
+                ],
+              })
+            }
+          >
+            + Ajouter une catégorie
+          </Button>
+        </div>
+      )}
+    </fieldset>
   );
 }
