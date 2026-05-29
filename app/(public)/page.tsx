@@ -119,7 +119,7 @@ export default function HomePage() {
               La cheffe
             </p>
             <h2 className="mt-4 font-display text-4xl italic leading-tight text-ink md:text-5xl">
-              Maryam Farid
+              Maryam
             </h2>
             <p className="mt-6 text-lg text-ink-soft">
               Jeune cheffe afghane, passée par le restaurant associatif Fair-e
