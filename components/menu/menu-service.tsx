@@ -1,4 +1,5 @@
 import type { MenuService } from "@/lib/menu";
+import { effectiveMenuMode } from "@/lib/menu";
 
 const tagStyles: Record<string, string> = {
   végétarien: "text-emerald-800 border-emerald-800/30 bg-emerald-50",
@@ -32,8 +33,26 @@ export function MenuServiceBlock({
     );
   }
 
+  const mode = effectiveMenuMode(service);
+
+  // Menu « texte simple » : on affiche le texte libre tel quel.
+  if (mode === "texte") {
+    return (
+      <section className="border-b border-ink/10">
+        <div className="mx-auto max-w-4xl px-6 py-20 md:px-10 md:py-24">
+          <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
+            Menu {label}
+          </p>
+          <div className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-relaxed text-ink-soft">
+            {service.text}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   // Menu « formule seule » : pas de carte détaillée, on met l'intitulé en avant.
-  if (service.categories.length === 0) {
+  if (mode === "formule") {
     return (
       <section className="border-b border-ink/10">
         <div className="mx-auto max-w-4xl px-6 py-20 md:px-10 md:py-24">
@@ -115,6 +134,17 @@ export function MenuServiceBlock({
             </div>
           ))}
         </div>
+
+        {service.boissons?.trim() && (
+          <div className="mt-16 border-t border-ink/10 pt-12">
+            <h3 className="font-display text-3xl italic text-ink md:text-4xl">
+              Boissons
+            </h3>
+            <div className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-relaxed text-ink-soft">
+              {service.boissons}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

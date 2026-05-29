@@ -9,7 +9,9 @@ export type {
   MenuCategory,
   MenuItem,
   MenuTag,
+  MenuMode,
 } from "@/lib/schemas/menu";
+export { effectiveMenuMode } from "@/lib/schemas/menu";
 
 export interface CurrentMenu {
   menu: Menu;

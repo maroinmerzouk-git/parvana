@@ -7,10 +7,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { saveMenu } from "@/app/admin/actions";
-import { menuTagSchema } from "@/lib/schemas/menu";
-import type { Menu, MenuService, MenuTag } from "@/lib/menu";
+import { menuTagSchema, effectiveMenuMode } from "@/lib/schemas/menu";
+import type { Menu, MenuService, MenuTag, MenuMode } from "@/lib/menu";
 
-type Mode = "carte" | "formule";
+type Mode = MenuMode;
 
 const TAGS = menuTagSchema.options;
 
@@ -20,21 +20,23 @@ type SaveState =
   | { kind: "success"; version: number }
   | { kind: "error"; message: string; details?: unknown };
 
-function modeFor(service: MenuService): Mode {
-  return service.categories.length > 0 ? "carte" : "formule";
-}
-
-/** Build the payload for one service, dropping carte details in formule mode. */
+/** Build the payload for one service, keeping only the fields the mode uses. */
 function normalize(service: MenuService, mode: Mode): MenuService {
+  const base = { active: service.active, mode, intro: "", formule: "", categories: [] };
   if (mode === "formule") {
-    return {
-      active: service.active,
-      intro: "",
-      formule: service.formule ?? "",
-      categories: [],
-    };
+    return { ...base, formule: service.formule ?? "" };
   }
-  return service;
+  if (mode === "texte") {
+    return { ...base, text: service.text ?? "" };
+  }
+  return {
+    ...base,
+    mode: "carte",
+    intro: service.intro,
+    formule: service.formule ?? "",
+    boissons: service.boissons ?? "",
+    categories: service.categories,
+  };
 }
 
 export function MenuEditor({
@@ -48,8 +50,8 @@ export function MenuEditor({
 }) {
   const [midi, setMidi] = React.useState<MenuService>(initialMenu.midi);
   const [soir, setSoir] = React.useState<MenuService>(initialMenu.soir);
-  const [midiMode, setMidiMode] = React.useState<Mode>(modeFor(initialMenu.midi));
-  const [soirMode, setSoirMode] = React.useState<Mode>(modeFor(initialMenu.soir));
+  const [midiMode, setMidiMode] = React.useState<Mode>(effectiveMenuMode(initialMenu.midi));
+  const [soirMode, setSoirMode] = React.useState<Mode>(effectiveMenuMode(initialMenu.soir));
   const [state, setState] = React.useState<SaveState>({ kind: "idle" });
 
   const dirty = () => {
@@ -59,23 +61,31 @@ export function MenuEditor({
   const reset = () => {
     setMidi(initialMenu.midi);
     setSoir(initialMenu.soir);
-    setMidiMode(modeFor(initialMenu.midi));
-    setSoirMode(modeFor(initialMenu.soir));
+    setMidiMode(effectiveMenuMode(initialMenu.midi));
+    setSoirMode(effectiveMenuMode(initialMenu.soir));
     setState({ kind: "idle" });
   };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Un menu actif en mode « formule seule » a besoin d'un intitulé.
+    // Un service actif doit avoir le contenu de son mode.
     for (const [svc, mode, label] of [
       [midi, midiMode, "midi"],
       [soir, soirMode, "soir"],
     ] as const) {
-      if (svc.active && mode === "formule" && !(svc.formule ?? "").trim()) {
+      if (!svc.active) continue;
+      if (mode === "formule" && !(svc.formule ?? "").trim()) {
         setState({
           kind: "error",
           message: `Le menu ${label} est actif en « formule seule » : indiquez l'intitulé de la formule.`,
+        });
+        return;
+      }
+      if (mode === "texte" && !(svc.text ?? "").trim()) {
+        setState({
+          kind: "error",
+          message: `Le menu ${label} est actif en « texte simple » : saisissez le contenu du menu.`,
         });
         return;
       }
@@ -256,19 +266,43 @@ function ServiceEditor({
             <RadioGroupItem value="carte" />
             Carte complète
           </label>
+          <label className="flex items-center gap-2 text-sm text-ink">
+            <RadioGroupItem value="texte" />
+            Texte simple
+          </label>
         </RadioGroup>
       </div>
 
-      <div className="mt-5 space-y-2">
-        <Label htmlFor={`${idPrefix}-formule`}>Intitulé de la formule</Label>
-        <Input
-          id={`${idPrefix}-formule`}
-          value={value.formule ?? ""}
-          onChange={(e) => set({ formule: e.target.value })}
-          placeholder="Ex. : Formule entrée + plat ou plat + dessert — 15,50€"
-          maxLength={200}
-        />
-      </div>
+      {mode !== "texte" && (
+        <div className="mt-5 space-y-2">
+          <Label htmlFor={`${idPrefix}-formule`}>Intitulé de la formule</Label>
+          <Input
+            id={`${idPrefix}-formule`}
+            value={value.formule ?? ""}
+            onChange={(e) => set({ formule: e.target.value })}
+            placeholder="Ex. : Formule entrée + plat ou plat + dessert — 15,50€"
+            maxLength={200}
+          />
+        </div>
+      )}
+
+      {mode === "texte" && (
+        <div className="mt-6 space-y-2 border-t border-ink/10 pt-6">
+          <Label htmlFor={`${idPrefix}-text`}>Menu (texte libre)</Label>
+          <Textarea
+            id={`${idPrefix}-text`}
+            value={value.text ?? ""}
+            onChange={(e) => set({ text: e.target.value })}
+            className="min-h-[280px] font-mono text-sm leading-relaxed"
+            maxLength={5000}
+            placeholder={"Entrées\n- Borani Banjan\n- Shorwa\n\nPlats\n- Kabuli Pulao\n\nBoissons\n- Thé vert cardamome"}
+          />
+          <p className="text-xs text-ink-soft">
+            Saisissez tout le menu (plats et boissons). La mise en forme (sauts
+            de ligne) est conservée telle quelle sur le site.
+          </p>
+        </div>
+      )}
 
       {mode === "carte" && (
         <div className="mt-6 space-y-6 border-t border-ink/10 pt-6">
@@ -430,6 +464,22 @@ function ServiceEditor({
           >
             + Ajouter une catégorie
           </Button>
+
+          <div className="space-y-2 border-t border-ink/10 pt-6">
+            <Label htmlFor={`${idPrefix}-boissons`}>Boissons</Label>
+            <Textarea
+              id={`${idPrefix}-boissons`}
+              value={value.boissons ?? ""}
+              onChange={(e) => set({ boissons: e.target.value })}
+              className="min-h-[140px] text-sm leading-relaxed"
+              maxLength={3000}
+              placeholder={"Cocktails : Lahla, Rosea, Monarque\nLimonades maison : citron-fraise, citron-menthe\nBoissons chaudes : thé vert cardamome, café…"}
+            />
+            <p className="text-xs text-ink-soft">
+              Section affichée sous la carte. Laissez vide pour ne pas afficher
+              de boissons. Les sauts de ligne sont conservés.
+            </p>
+          </div>
         </div>
       )}
     </fieldset>
