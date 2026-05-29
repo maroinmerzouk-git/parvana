@@ -57,7 +57,6 @@ export function MenuEditor({
   const [boissons, setBoissons] = React.useState<MenuService>(initialBoissons);
   const [midiMode, setMidiMode] = React.useState<Mode>(effectiveMenuMode(initialMenu.midi));
   const [soirMode, setSoirMode] = React.useState<Mode>(effectiveMenuMode(initialMenu.soir));
-  const [boissonsMode, setBoissonsMode] = React.useState<Mode>(effectiveMenuMode(initialBoissons));
   const [state, setState] = React.useState<SaveState>({ kind: "idle" });
 
   const dirty = () => {
@@ -70,7 +69,6 @@ export function MenuEditor({
     setBoissons(initialBoissons);
     setMidiMode(effectiveMenuMode(initialMenu.midi));
     setSoirMode(effectiveMenuMode(initialMenu.soir));
-    setBoissonsMode(effectiveMenuMode(initialBoissons));
     setState({ kind: "idle" });
   };
 
@@ -81,7 +79,6 @@ export function MenuEditor({
     for (const [svc, mode, label] of [
       [midi, midiMode, "midi"],
       [soir, soirMode, "soir"],
-      [boissons, boissonsMode, "boissons"],
     ] as const) {
       if (!svc.active) continue;
       if (mode === "formule" && !(svc.formule ?? "").trim()) {
@@ -100,11 +97,20 @@ export function MenuEditor({
       }
     }
 
+    // La carte des boissons est en texte libre uniquement.
+    if (boissons.active && !(boissons.text ?? "").trim()) {
+      setState({
+        kind: "error",
+        message: "La carte des boissons est active : saisissez les boissons.",
+      });
+      return;
+    }
+
     setState({ kind: "saving" });
     const menu: Menu = {
       midi: normalize(midi, midiMode),
       soir: normalize(soir, soirMode),
-      boissons: normalize(boissons, boissonsMode),
+      boissons: normalize(boissons, "texte"),
     };
     const result = await saveMenu(JSON.stringify(menu));
     if (result.ok) {
@@ -161,20 +167,43 @@ export function MenuEditor({
         }}
       />
 
-      <ServiceEditor
-        label="Boissons"
-        idPrefix="boissons"
-        value={boissons}
-        mode={boissonsMode}
-        onChange={(next) => {
-          setBoissons(next);
-          dirty();
-        }}
-        onModeChange={(m) => {
-          setBoissonsMode(m);
-          dirty();
-        }}
-      />
+      <fieldset className="rounded-lg border border-ink/15 bg-sand/40 p-4 md:p-6">
+        <legend className="px-2 font-display text-2xl italic text-ink">
+          Carte des boissons
+        </legend>
+
+        <label className="mt-2 flex items-center gap-3 text-sm text-ink">
+          <input
+            type="checkbox"
+            checked={boissons.active}
+            onChange={(e) => {
+              setBoissons({ ...boissons, active: e.target.checked });
+              dirty();
+            }}
+            className="h-4 w-4 accent-terracotta"
+          />
+          Section active (visible sur le site)
+        </label>
+
+        <div className="mt-6 space-y-2 border-t border-ink/10 pt-6">
+          <Label htmlFor="boissons-text">Boissons (texte libre)</Label>
+          <Textarea
+            id="boissons-text"
+            value={boissons.text ?? ""}
+            onChange={(e) => {
+              setBoissons({ ...boissons, text: e.target.value });
+              dirty();
+            }}
+            className="min-h-[280px] font-mono text-sm leading-relaxed"
+            maxLength={5000}
+            placeholder={"Cocktails\n- Lahla — grenade, framboise, citron, menthe — 8€\n- Rosea — pêche, fraise, lavande — 8€\n\nLimonades maison\n- Citron, fraise — 5€\n\nBoissons chaudes\n- Thé vert cardamome — 3,50€"}
+          />
+          <p className="text-xs text-ink-soft">
+            La carte des boissons s&apos;écrit en texte libre. La mise en forme
+            (sauts de ligne) est conservée telle quelle sur le site.
+          </p>
+        </div>
+      </fieldset>
 
       {state.kind === "error" && (
         <div className="rounded-md border border-terracotta-dark/30 bg-terracotta/5 p-4 text-sm text-terracotta-dark">

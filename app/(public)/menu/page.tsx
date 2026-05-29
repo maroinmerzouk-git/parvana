@@ -66,12 +66,11 @@ export default async function MenuPage() {
 
       <MenuServiceBlock label="midi" service={menu.midi} />
       <MenuServiceBlock label="soir" service={menu.soir} />
-      {menu.boissons && (
+      {menu.boissons?.active && (
         <MenuServiceBlock
           label="boissons"
           service={menu.boissons}
-          eyebrow="Boissons"
-          carteHeading="Les boissons"
+          eyebrow="Carte des boissons"
         />
       )}
 
