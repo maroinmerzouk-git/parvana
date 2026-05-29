@@ -168,11 +168,20 @@ export default function HomePage() {
 
       <section className="border-b border-ink/10">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-[1fr_1.2fr] md:gap-16 md:px-10 md:py-28 md:items-center">
-          {/* TODO: en attente d'un portrait de Maryam en cuisine (aucune photo fournie pour l'instant) */}
-          <PhotoPlaceholder
-            description="portrait · Maryam"
-            aspectRatio="3/4"
-          />
+          <figure className="relative aspect-[16/9] overflow-hidden border border-ink/10 bg-sand">
+            <video
+              className="h-full w-full object-cover"
+              src="/video/maryam-palaw.mp4"
+              poster="/video/maryam-palaw-poster.jpg"
+              controls
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-label="Maryam prépare le palaw, riz afghan emblématique de Parvana"
+            />
+          </figure>
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
               La cheffe
