@@ -86,6 +86,14 @@ export async function AdminNav() {
             Menu
           </Link>
 
+          <Link
+            href="/admin/association"
+            className="rounded-full px-3 py-2 text-ink hover:bg-beige"
+          >
+            <span className="hidden sm:inline">Association</span>
+            <span className="sm:hidden">Asso</span>
+          </Link>
+
           <form action={logoutAdmin} className="ml-2">
             <button
               type="submit"

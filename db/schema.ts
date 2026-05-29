@@ -118,3 +118,18 @@ export const cateringRequests = pgTable(
 
 export type CateringRequest = typeof cateringRequests.$inferSelect;
 export type NewCateringRequest = typeof cateringRequests.$inferInsert;
+
+// Editable site settings, keyed by section (e.g. "association"). One row per
+// key, upserted on save. `data` holds a section-specific JSON blob validated
+// by Zod before it is read or written.
+export const siteSettings = pgTable("site_settings", {
+  key: text("key").primaryKey(),
+  data: jsonb("data").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedBy: text("updated_by"),
+});
+
+export type SiteSetting = typeof siteSettings.$inferSelect;
+export type NewSiteSetting = typeof siteSettings.$inferInsert;

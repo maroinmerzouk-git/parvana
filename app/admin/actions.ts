@@ -16,6 +16,8 @@ import {
   clientRejectionEmail,
 } from "@/lib/email/templates";
 import { menuSchema } from "@/lib/schemas/menu";
+import { associationSettingsSchema } from "@/lib/schemas/association";
+import { ASSOCIATION_SETTINGS_KEY } from "@/lib/association";
 
 const idSchema = z.string().uuid();
 const rejectSchema = z.object({
@@ -196,6 +198,51 @@ export async function saveMenu(rawJson: string): Promise<SaveMenuResult> {
   revalidatePath("/menu");
   revalidatePath("/admin/menu");
   return { ok: true, version: row.version };
+}
+
+type SaveAssociationResult =
+  | { ok: true }
+  | { ok: false; error: string; details?: unknown };
+
+export async function saveAssociationSettings(
+  raw: unknown,
+): Promise<SaveAssociationResult> {
+  const userId = await requireAuth();
+
+  const validated = associationSettingsSchema.safeParse(raw);
+  if (!validated.success) {
+    return {
+      ok: false,
+      error: "Les réglages ne respectent pas le format attendu.",
+      details: validated.error.flatten(),
+    };
+  }
+
+  const { startDate, endDate } = validated.data.ateliers;
+  if (startDate && endDate && startDate > endDate) {
+    return {
+      ok: false,
+      error: "La date de début doit précéder la date de fin.",
+    };
+  }
+
+  const db = getDb();
+  await db
+    .insert(schema.siteSettings)
+    .values({
+      key: ASSOCIATION_SETTINGS_KEY,
+      data: validated.data,
+      updatedBy: userId,
+      updatedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: schema.siteSettings.key,
+      set: { data: validated.data, updatedBy: userId, updatedAt: new Date() },
+    });
+
+  revalidatePath("/association");
+  revalidatePath("/admin/association");
+  return { ok: true };
 }
 
 export async function markCateringSeen(rawId: string) {

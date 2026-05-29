@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
+import { getAssociationSettings, ateliersDateLabel } from "@/lib/association";
 
 export const metadata: Metadata = {
   title: "Association",
   description:
     "Le projet associatif de Parvana — soutenir les femmes et les enfants sans abri en Asie centrale à travers la santé, l'éducation, le logement et l'accès au travail.",
 };
+
+export const dynamic = "force-dynamic";
 
 const actions: Array<[string, string]> = [
   [
@@ -27,7 +30,10 @@ const actions: Array<[string, string]> = [
   ],
 ];
 
-export default function AssociationPage() {
+export default async function AssociationPage() {
+  const settings = await getAssociationSettings();
+  const ateliersDates = ateliersDateLabel(settings.ateliers);
+
   return (
     <>
       <section className="border-b border-ink/10">
@@ -119,6 +125,11 @@ export default function AssociationPage() {
             <h2 className="mt-4 font-display text-3xl italic leading-tight text-ink md:text-4xl">
               Ateliers artistiques et culinaires.
             </h2>
+            {ateliersDates && (
+              <p className="mt-4 inline-flex items-center rounded-full border border-terracotta/40 bg-terracotta/5 px-4 py-1.5 text-sm font-medium text-terracotta-dark">
+                {ateliersDates}
+              </p>
+            )}
             <div className="mt-6 space-y-4 text-lg text-ink-soft">
               <p>
                 Les ateliers artistiques et culinaires sont organisés par les
