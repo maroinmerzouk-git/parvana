@@ -73,10 +73,11 @@ export default function AssociationPage() {
               </p>
             </div>
           </div>
-          {/* TODO: remplacer par la photo fournie par la cliente — sujet: suspensions textiles tissées à la main dans la salle */}
           <PhotoPlaceholder
             description="textiles · suspensions"
             aspectRatio="3/4"
+            src="/photos/suspensions.jpg"
+            alt="Lanternes et voilages suspendus dans la salle, devant un tapis traditionnel"
           />
         </div>
       </section>
@@ -105,8 +106,12 @@ export default function AssociationPage() {
 
       <section className="border-b border-ink/10">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-[1fr_1.4fr] md:gap-16 md:px-10 md:py-24">
-          {/* TODO: remplacer par la photo fournie par la cliente — sujet: atelier en cours, mains au travail */}
-          <PhotoPlaceholder description="ateliers · partage" aspectRatio="3/4" />
+          <PhotoPlaceholder
+            description="ateliers · partage"
+            aspectRatio="3/4"
+            src="/photos/partage.jpg"
+            alt="Moment de partage autour d'un repas : thé versé dans une tasse en céramique"
+          />
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
               Les ateliers

@@ -32,8 +32,12 @@ export default function RestaurantPage() {
 
       <section className="border-b border-ink/10">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-[1fr_1.4fr] md:gap-16 md:px-10 md:py-24">
-          {/* TODO: remplacer par la photo fournie par la cliente — sujet: vitrine ou plat signature */}
-          <PhotoPlaceholder description="cuisine · vitrine" aspectRatio="3/4" />
+          <PhotoPlaceholder
+            description="cuisine · vitrine"
+            aspectRatio="3/4"
+            src="/photos/plat-signature.jpg"
+            alt="Plat signature de Parvana : aubergine fondante, légumes marinés et pain plat dans un bol vert"
+          />
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
               Notre cuisine
@@ -84,15 +88,19 @@ export default function RestaurantPage() {
                 </p>
               </div>
             </div>
-            {/* TODO: remplacer par la photo fournie par la cliente — sujet: salle, textiles, suspensions */}
-            <PhotoPlaceholder description="salle · textiles" aspectRatio="4/5" />
+            <PhotoPlaceholder
+              description="salle · textiles"
+              aspectRatio="4/5"
+              src="/photos/salle-tapis.jpg"
+              alt="Mur de tapis persans et table dressée dans la salle de Parvana"
+            />
           </div>
         </div>
       </section>
 
       <section className="border-b border-ink/10">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-[1fr_1.4fr] md:gap-16 md:px-10 md:py-24">
-          {/* TODO: remplacer par la photo fournie par la cliente — sujet: portrait Maryam ou détail livre Parvana */}
+          {/* TODO: en attente d'un portrait de Maryam ou d'un détail du livre Parvana (aucune photo fournie pour l'instant) */}
           <PhotoPlaceholder description="portrait · Maryam" aspectRatio="3/4" />
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
@@ -157,8 +165,12 @@ export default function RestaurantPage() {
                 Demander un devis →
               </Link>
             </div>
-            {/* TODO: remplacer par la photo fournie par la cliente — sujet: plateau traiteur ou buffet */}
-            <PhotoPlaceholder description="traiteur · buffet" aspectRatio="4/5" />
+            <PhotoPlaceholder
+              description="traiteur · buffet"
+              aspectRatio="4/5"
+              src="/photos/traiteur-buffet.jpg"
+              alt="Buffet traiteur Parvana : plateaux de bouchées et tartelettes disposés le long du comptoir"
+            />
           </div>
         </div>
       </section>
@@ -166,10 +178,11 @@ export default function RestaurantPage() {
       <section className="border-b border-ink/10">
         <div className="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-24">
           <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:gap-16">
-            {/* TODO: remplacer par la photo fournie par la cliente — sujet: artisanat / objets faits main */}
             <PhotoPlaceholder
               description="artisanat · textiles"
               aspectRatio="3/4"
+              src="/photos/artisanat-ceramiques.jpg"
+              alt="Céramiques et théières artisanales d'Asie centrale exposées sur des étagères en bois"
             />
             <div>
               <p className="text-xs uppercase tracking-[0.22em] text-terracotta">

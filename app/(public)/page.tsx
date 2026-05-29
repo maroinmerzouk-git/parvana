@@ -36,10 +36,12 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* TODO: remplacer par la photo fournie par la cliente — sujet: vue d'ensemble du restaurant, ambiance salle */}
           <PhotoPlaceholder
             description="vue d'ensemble · salle"
             aspectRatio="4/5"
+            src="/photos/salle-vue-ensemble.jpg"
+            alt="La salle de Parvana : tables en bois, chaises en rotin et suspensions textiles sous une grande verrière"
+            priority
           />
         </div>
       </section>
@@ -78,7 +80,7 @@ export default function HomePage() {
 
       <section className="border-b border-ink/10">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-[1fr_1.2fr] md:gap-16 md:px-10 md:py-28 md:items-center">
-          {/* TODO: remplacer par la photo fournie par la cliente — sujet: portrait Maryam en cuisine */}
+          {/* TODO: en attente d'un portrait de Maryam en cuisine (aucune photo fournie pour l'instant) */}
           <PhotoPlaceholder
             description="portrait · Maryam"
             aspectRatio="3/4"
