@@ -100,8 +100,12 @@ export default function RestaurantPage() {
 
       <section className="border-b border-ink/10">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 md:grid-cols-[1fr_1.4fr] md:gap-16 md:px-10 md:py-24">
-          {/* TODO: en attente d'un portrait de Maryam ou d'un détail du livre Parvana (aucune photo fournie pour l'instant) */}
-          <PhotoPlaceholder description="portrait · Maryam" aspectRatio="3/4" />
+          <PhotoPlaceholder
+            description="dessert · cornets pistache"
+            aspectRatio="3/4"
+            src="/photos/dessert-cornets-pistache.jpg"
+            alt="Cornets feuilletés saupoudrés de sucre glace et garnis de crème à la pistache, servis dans un plat en terre cuite"
+          />
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
               L&apos;histoire de Parvana

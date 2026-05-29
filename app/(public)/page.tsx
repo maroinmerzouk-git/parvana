@@ -97,10 +97,10 @@ export default function HomePage() {
           </div>
 
           <PhotoPlaceholder
-            description="vue d'ensemble · salle"
+            description="lanternes · salle"
             aspectRatio="4/5"
-            src="/photos/salle-vue-ensemble.jpg"
-            alt="La salle de Parvana : tables en bois, chaises en rotin et suspensions textiles sous une grande verrière"
+            src="/photos/lanternes-salle.jpg"
+            alt="Lanternes orientales en verre ambré suspendues devant des voilages, avec un tapis afghan en arrière-plan"
             priority
           />
         </div>
