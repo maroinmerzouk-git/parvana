@@ -1,10 +1,69 @@
 import Link from "next/link";
 import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
 import { PhotoStrip } from "@/components/site/photo-strip";
+import { SITE_URL } from "@/lib/site";
+
+const restaurantJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  name: "Parvana",
+  description:
+    "Restaurant afghan à Nantes : cuisine faite maison, halal, en cantine le midi et brunch le week-end, sur l'Île de Nantes.",
+  servesCuisine: "Afghane",
+  url: SITE_URL,
+  telephone: "+33622643253",
+  email: "contact@parvana.fr",
+  image: `${SITE_URL}/photos/salle-vue-ensemble.jpg`,
+  priceRange: "€€",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "8 Boulevard Gisèle Halimi",
+    addressLocality: "Nantes",
+    postalCode: "44200",
+    addressCountry: "FR",
+  },
+  sameAs: ["https://instagram.com/parvana_nantes"],
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "12:00",
+      closes: "14:30",
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Saturday", "Sunday"],
+      opens: "11:00",
+      closes: "14:30",
+    },
+  ],
+  acceptsReservations: true,
+  potentialAction: {
+    "@type": "ReserveAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${SITE_URL}/reservation`,
+      inLanguage: "fr",
+      actionPlatform: [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/IOSPlatform",
+        "http://schema.org/AndroidPlatform",
+      ],
+    },
+    result: {
+      "@type": "Reservation",
+      name: "Réserver une table",
+    },
+  },
+};
 
 export default function HomePage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantJsonLd) }}
+      />
       <section className="relative overflow-hidden border-b border-ink/10">
         <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-[1.1fr_1fr] md:gap-16 md:px-10 md:py-28 md:items-center">
           <div>
