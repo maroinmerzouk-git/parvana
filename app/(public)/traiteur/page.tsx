@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CateringForm } from "@/components/catering/catering-form";
+import { PhotoStrip } from "@/components/site/photo-strip";
 
 export const metadata: Metadata = {
   title: "Traiteur",
@@ -27,6 +28,23 @@ export default function TraiteurPage() {
             proposition adaptée, remplissez ce formulaire&nbsp;: Maryam vous
             répondra personnellement.
           </p>
+        </div>
+      </section>
+
+      <section className="border-b border-ink/10 bg-sand">
+        <div className="mx-auto max-w-5xl px-6 py-12 md:px-10 md:py-16">
+          <PhotoStrip
+            photos={[
+              {
+                src: "/photos/traiteur-plateaux.jpg",
+                alt: "Buffet traiteur : plateaux de riz, plats mijotés et garnitures disposés en ligne",
+              },
+              {
+                src: "/photos/traiteur-tartelettes.jpg",
+                alt: "Tartelettes aux épinards et herbes présentées sur un plateau en bois",
+              },
+            ]}
+          />
         </div>
       </section>
 

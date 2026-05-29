@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentMenu } from "@/lib/menu";
 import { MenuServiceBlock } from "@/components/menu/menu-service";
+import { PhotoStrip } from "@/components/site/photo-strip";
 
 export const metadata: Metadata = {
   title: "Menu",
@@ -42,8 +43,61 @@ export default async function MenuPage() {
         </div>
       </section>
 
+      <section className="border-b border-ink/10">
+        <div className="mx-auto max-w-6xl px-6 py-12 md:px-10 md:py-16">
+          <PhotoStrip
+            photos={[
+              {
+                src: "/photos/menu-aubergine.jpg",
+                alt: "Aubergines fondantes aux pois chiches croustillants",
+              },
+              {
+                src: "/photos/plat-signature.jpg",
+                alt: "Aubergine, légumes marinés et pain plat dans un bol vert",
+              },
+              {
+                src: "/photos/menu-baklava.jpg",
+                alt: "Baklava aux fruits secs présenté en vitrine",
+              },
+            ]}
+          />
+        </div>
+      </section>
+
       <MenuServiceBlock label="midi" service={menu.midi} />
       <MenuServiceBlock label="soir" service={menu.soir} />
+
+      <section className="border-t border-ink/10 bg-sand">
+        <div className="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
+          <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
+            Pâtisseries maison
+          </p>
+          <h2 className="mt-4 max-w-xl font-display text-3xl italic text-ink md:text-4xl">
+            Les créations de la cheffe.
+          </h2>
+          <PhotoStrip
+            className="mt-10"
+            photos={[
+              {
+                src: "/photos/menu-gateau-semoule.jpg",
+                alt: "Part de gâteau de semoule aux graines sur une assiette bleue",
+              },
+              {
+                src: "/photos/patisserie-pistache.jpg",
+                alt: "Biscuits sablés saupoudrés de pistache concassée",
+              },
+              {
+                src: "/photos/patisserie-roules.jpg",
+                alt: "Roulés feuilletés à la pistache, saupoudrés de sucre glace",
+              },
+              {
+                src: "/photos/patisserie-miel.jpg",
+                alt: "Bouchées au miel et fruits secs dans un plat en terre cuite",
+              },
+            ]}
+          />
+        </div>
+      </section>
     </>
   );
 }

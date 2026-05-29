@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { PhotoStrip } from "@/components/site/photo-strip";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -42,6 +43,23 @@ export default function ContactPage() {
             moyen le plus rapide pour une question : nous décrochons pendant les
             services.
           </p>
+        </div>
+      </section>
+
+      <section className="border-b border-ink/10 bg-sand">
+        <div className="mx-auto max-w-5xl px-6 py-12 md:px-10 md:py-16">
+          <PhotoStrip
+            photos={[
+              {
+                src: "/photos/ambiance-fauteuil.jpg",
+                alt: "Chaise en bois et rotin baignée de lumière près de la baie vitrée",
+              },
+              {
+                src: "/photos/ambiance-tapis.jpg",
+                alt: "Détail d'un tapis persan et de coussins dans la salle, au soleil",
+              },
+            ]}
+          />
         </div>
       </section>
 

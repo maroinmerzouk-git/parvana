@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
+import { PhotoStrip } from "@/components/site/photo-strip";
 
 export default function HomePage() {
   return (
@@ -75,6 +76,34 @@ export default function HomePage() {
               <p className="mt-4 text-ink-soft">{b.body}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="border-b border-ink/10">
+        <div className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
+          <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
+            En cuisine
+          </p>
+          <h2 className="mt-4 max-w-xl font-display text-3xl italic text-ink md:text-4xl">
+            Du salé au sucré, tout est fait maison.
+          </h2>
+          <PhotoStrip
+            className="mt-10"
+            photos={[
+              {
+                src: "/photos/cuisine-plat-oeuf.jpg",
+                alt: "Plat mijoté aux œufs, tomates et coriandre servi dans un bol",
+              },
+              {
+                src: "/photos/cuisine-riz-afghan.jpg",
+                alt: "Riz afghan aux carottes confites et raisins secs",
+              },
+              {
+                src: "/photos/cuisine-riz-au-lait.jpg",
+                alt: "Dessert crémeux aux fruits et graines dans un bol en céramique",
+              },
+            ]}
+          />
         </div>
       </section>
 

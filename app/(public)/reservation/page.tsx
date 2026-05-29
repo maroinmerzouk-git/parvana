@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ReservationForm } from "@/components/reservation/reservation-form";
+import { PhotoStrip } from "@/components/site/photo-strip";
 
 export const metadata: Metadata = {
   title: "Réservation",
@@ -26,6 +27,19 @@ export default function ReservationPage() {
             puis un email de confirmation une fois votre table validée. Sans
             ce second email, la table n&apos;est pas garantie.
           </p>
+        </div>
+      </section>
+
+      <section className="border-b border-ink/10 bg-sand">
+        <div className="mx-auto max-w-2xl px-6 py-12 md:px-10 md:py-16">
+          <PhotoStrip
+            photos={[
+              {
+                src: "/photos/salle-table.jpg",
+                alt: "Table dressée avec un bouquet de fleurs séchées devant un mur de tapis",
+              },
+            ]}
+          />
         </div>
       </section>
 
