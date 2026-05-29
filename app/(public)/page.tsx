@@ -8,7 +8,7 @@ const restaurantJsonLd = {
   "@type": "Restaurant",
   name: "Parvana",
   description:
-    "Restaurant afghan à Nantes : cuisine faite maison, halal, en cantine le midi et brunch le week-end, sur l'Île de Nantes.",
+    "Restaurant afghan à Nantes : cuisine faite maison, halal, midi et soir du mardi au vendredi, brunch le week-end, sur l'Île de Nantes.",
   servesCuisine: "Afghane",
   url: SITE_URL,
   telephone: "+33622643253",
@@ -29,6 +29,12 @@ const restaurantJsonLd = {
       dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday"],
       opens: "12:00",
       closes: "14:30",
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "19:00",
+      closes: "22:00",
     },
     {
       "@type": "OpeningHoursSpecification",

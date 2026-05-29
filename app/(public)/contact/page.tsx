@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 
 const hours: Array<[string, string, boolean]> = [
   ["Lundi", "Fermé", true],
-  ["Mardi", "12h00 — 14h30", false],
-  ["Mercredi", "12h00 — 14h30", false],
-  ["Jeudi", "12h00 — 14h30", false],
-  ["Vendredi", "12h00 — 14h30", false],
+  ["Mardi", "12h00 — 14h30 · 19h00 — 22h00", false],
+  ["Mercredi", "12h00 — 14h30 · 19h00 — 22h00", false],
+  ["Jeudi", "12h00 — 14h30 · 19h00 — 22h00", false],
+  ["Vendredi", "12h00 — 14h30 · 19h00 — 22h00", false],
   ["Samedi", "11h00 — 14h30 · brunch", false],
   ["Dimanche", "11h00 — 14h30 · brunch", false],
 ];
@@ -132,8 +132,8 @@ export default function ContactPage() {
               ))}
             </ul>
             <p className="mt-6 text-sm text-ink-soft">
-              Service du soir 19h00 — 22h00 selon les jours — voir le menu pour
-              les dates ouvertes.
+              Service du soir 19h00 — 22h00 du mardi au vendredi. Brunch le
+              week-end.
             </p>
           </div>
         </div>
