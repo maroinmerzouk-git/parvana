@@ -38,14 +38,15 @@ export const menuServiceSchema = z.object({
   formule: z.string().trim().max(200).nullable().or(z.literal("")),
   // Free-text composition used in "texte" mode (line breaks preserved).
   text: z.string().trim().max(5000).optional(),
-  // Free-text drinks section, shown under a "Boissons" block in carte mode.
-  boissons: z.string().trim().max(3000).optional(),
   categories: z.array(menuCategorySchema),
 });
 
 export const menuSchema = z.object({
   midi: menuServiceSchema,
   soir: menuServiceSchema,
+  // Dedicated drinks section, composed exactly like midi/soir. Optional for
+  // backward compatibility with rows saved before it existed.
+  boissons: menuServiceSchema.optional(),
 });
 
 export type MenuTag = z.infer<typeof menuTagSchema>;
@@ -54,6 +55,16 @@ export type MenuCategory = z.infer<typeof menuCategorySchema>;
 export type MenuService = z.infer<typeof menuServiceSchema>;
 export type MenuMode = z.infer<typeof menuModeSchema>;
 export type Menu = z.infer<typeof menuSchema>;
+
+/** A blank, inactive service — used as the default for new/absent sections. */
+export const EMPTY_MENU_SERVICE: MenuService = {
+  active: false,
+  mode: "carte",
+  intro: "",
+  formule: "",
+  text: "",
+  categories: [],
+};
 
 /**
  * Resolve a service's composition mode, falling back to the legacy heuristic

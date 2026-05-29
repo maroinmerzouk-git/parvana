@@ -66,6 +66,14 @@ export default async function MenuPage() {
 
       <MenuServiceBlock label="midi" service={menu.midi} />
       <MenuServiceBlock label="soir" service={menu.soir} />
+      {menu.boissons && (
+        <MenuServiceBlock
+          label="boissons"
+          service={menu.boissons}
+          eyebrow="Boissons"
+          carteHeading="Les boissons"
+        />
+      )}
 
       <section className="border-t border-ink/10 bg-sand">
         <div className="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">

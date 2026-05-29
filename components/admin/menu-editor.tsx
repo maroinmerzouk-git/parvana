@@ -7,7 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { saveMenu } from "@/app/admin/actions";
-import { menuTagSchema, effectiveMenuMode } from "@/lib/schemas/menu";
+import {
+  menuTagSchema,
+  effectiveMenuMode,
+  EMPTY_MENU_SERVICE,
+} from "@/lib/schemas/menu";
 import type { Menu, MenuService, MenuTag, MenuMode } from "@/lib/menu";
 
 type Mode = MenuMode;
@@ -34,7 +38,6 @@ function normalize(service: MenuService, mode: Mode): MenuService {
     mode: "carte",
     intro: service.intro,
     formule: service.formule ?? "",
-    boissons: service.boissons ?? "",
     categories: service.categories,
   };
 }
@@ -48,10 +51,13 @@ export function MenuEditor({
   initialVersion: number | null;
   source: "db" | "fallback";
 }) {
+  const initialBoissons = initialMenu.boissons ?? EMPTY_MENU_SERVICE;
   const [midi, setMidi] = React.useState<MenuService>(initialMenu.midi);
   const [soir, setSoir] = React.useState<MenuService>(initialMenu.soir);
+  const [boissons, setBoissons] = React.useState<MenuService>(initialBoissons);
   const [midiMode, setMidiMode] = React.useState<Mode>(effectiveMenuMode(initialMenu.midi));
   const [soirMode, setSoirMode] = React.useState<Mode>(effectiveMenuMode(initialMenu.soir));
+  const [boissonsMode, setBoissonsMode] = React.useState<Mode>(effectiveMenuMode(initialBoissons));
   const [state, setState] = React.useState<SaveState>({ kind: "idle" });
 
   const dirty = () => {
@@ -61,8 +67,10 @@ export function MenuEditor({
   const reset = () => {
     setMidi(initialMenu.midi);
     setSoir(initialMenu.soir);
+    setBoissons(initialBoissons);
     setMidiMode(effectiveMenuMode(initialMenu.midi));
     setSoirMode(effectiveMenuMode(initialMenu.soir));
+    setBoissonsMode(effectiveMenuMode(initialBoissons));
     setState({ kind: "idle" });
   };
 
@@ -73,6 +81,7 @@ export function MenuEditor({
     for (const [svc, mode, label] of [
       [midi, midiMode, "midi"],
       [soir, soirMode, "soir"],
+      [boissons, boissonsMode, "boissons"],
     ] as const) {
       if (!svc.active) continue;
       if (mode === "formule" && !(svc.formule ?? "").trim()) {
@@ -85,7 +94,7 @@ export function MenuEditor({
       if (mode === "texte" && !(svc.text ?? "").trim()) {
         setState({
           kind: "error",
-          message: `Le menu ${label} est actif en « texte simple » : saisissez le contenu du menu.`,
+          message: `Le menu ${label} est actif en « texte simple » : saisissez le contenu.`,
         });
         return;
       }
@@ -95,6 +104,7 @@ export function MenuEditor({
     const menu: Menu = {
       midi: normalize(midi, midiMode),
       soir: normalize(soir, soirMode),
+      boissons: normalize(boissons, boissonsMode),
     };
     const result = await saveMenu(JSON.stringify(menu));
     if (result.ok) {
@@ -147,6 +157,21 @@ export function MenuEditor({
         }}
         onModeChange={(m) => {
           setSoirMode(m);
+          dirty();
+        }}
+      />
+
+      <ServiceEditor
+        label="Boissons"
+        idPrefix="boissons"
+        value={boissons}
+        mode={boissonsMode}
+        onChange={(next) => {
+          setBoissons(next);
+          dirty();
+        }}
+        onModeChange={(m) => {
+          setBoissonsMode(m);
           dirty();
         }}
       />
@@ -464,22 +489,6 @@ function ServiceEditor({
           >
             + Ajouter une catégorie
           </Button>
-
-          <div className="space-y-2 border-t border-ink/10 pt-6">
-            <Label htmlFor={`${idPrefix}-boissons`}>Boissons</Label>
-            <Textarea
-              id={`${idPrefix}-boissons`}
-              value={value.boissons ?? ""}
-              onChange={(e) => set({ boissons: e.target.value })}
-              className="min-h-[140px] text-sm leading-relaxed"
-              maxLength={3000}
-              placeholder={"Cocktails : Lahla, Rosea, Monarque\nLimonades maison : citron-fraise, citron-menthe\nBoissons chaudes : thé vert cardamome, café…"}
-            />
-            <p className="text-xs text-ink-soft">
-              Section affichée sous la carte. Laissez vide pour ne pas afficher
-              de boissons. Les sauts de ligne sont conservés.
-            </p>
-          </div>
         </div>
       )}
     </fieldset>

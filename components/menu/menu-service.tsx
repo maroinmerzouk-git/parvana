@@ -13,16 +13,25 @@ const tagStyles: Record<string, string> = {
 export function MenuServiceBlock({
   label,
   service,
+  eyebrow,
+  carteHeading = "La carte",
 }: {
+  /** Used to build the default eyebrow ("Menu {label}"). */
   label: string;
   service: MenuService;
+  /** Overrides the small eyebrow label (e.g. "Boissons" for the drinks section). */
+  eyebrow?: string;
+  /** Big title shown in carte mode. */
+  carteHeading?: string;
 }) {
+  const eyebrowLabel = eyebrow ?? `Menu ${label}`;
+
   if (!service.active) {
     return (
       <section className="border-b border-ink/10 bg-sand">
         <div className="mx-auto max-w-4xl px-6 py-16 md:px-10 md:py-20">
           <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
-            Menu {label}
+            {eyebrowLabel}
           </p>
           <h2 className="mt-4 font-display text-4xl italic text-ink md:text-5xl">
             À venir
@@ -35,13 +44,13 @@ export function MenuServiceBlock({
 
   const mode = effectiveMenuMode(service);
 
-  // Menu « texte simple » : on affiche le texte libre tel quel.
+  // Mode « texte simple » : on affiche le texte libre tel quel.
   if (mode === "texte") {
     return (
       <section className="border-b border-ink/10">
         <div className="mx-auto max-w-4xl px-6 py-20 md:px-10 md:py-24">
           <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
-            Menu {label}
+            {eyebrowLabel}
           </p>
           <div className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-relaxed text-ink-soft">
             {service.text}
@@ -51,13 +60,13 @@ export function MenuServiceBlock({
     );
   }
 
-  // Menu « formule seule » : pas de carte détaillée, on met l'intitulé en avant.
+  // Mode « formule seule » : pas de carte détaillée, on met l'intitulé en avant.
   if (mode === "formule") {
     return (
       <section className="border-b border-ink/10">
         <div className="mx-auto max-w-4xl px-6 py-20 md:px-10 md:py-24">
           <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
-            Menu {label}
+            {eyebrowLabel}
           </p>
           <h2 className="mt-4 font-display text-4xl italic leading-tight text-ink md:text-5xl">
             {service.formule || "À l'ardoise"}
@@ -76,10 +85,10 @@ export function MenuServiceBlock({
         <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
-              Menu {label}
+              {eyebrowLabel}
             </p>
             <h2 className="mt-3 font-display text-5xl italic leading-tight text-ink md:text-6xl">
-              La carte
+              {carteHeading}
             </h2>
           </div>
           {service.formule && (
@@ -134,17 +143,6 @@ export function MenuServiceBlock({
             </div>
           ))}
         </div>
-
-        {service.boissons?.trim() && (
-          <div className="mt-16 border-t border-ink/10 pt-12">
-            <h3 className="font-display text-3xl italic text-ink md:text-4xl">
-              Boissons
-            </h3>
-            <div className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-relaxed text-ink-soft">
-              {service.boissons}
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );

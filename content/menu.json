@@ -11,25 +11,33 @@
             "name": "Borani Banjan",
             "description": "Aubergines mijotées dans une sauce tomate parfumée, dressées sur un lit de yaourt à l'ail, finition de menthe séchée et grenade.",
             "price": null,
-            "tags": ["végétarien"]
+            "tags": [
+              "végétarien"
+            ]
           },
           {
             "name": "Kaddo Bourani",
             "description": "Citrouille rôtie au four jusqu'à caramélisation, nappée de yaourt à l'ail et menthe fraîche. Une douceur fumée, signature des tables afghanes.",
             "price": null,
-            "tags": ["végétarien"]
+            "tags": [
+              "végétarien"
+            ]
           },
           {
             "name": "Shorwa",
             "description": "Soupe traditionnelle afghane mijotée aux légumes-racines, pois chiches et herbes — à la fois rustique et profondément réconfortante.",
             "price": null,
-            "tags": ["soupe"]
+            "tags": [
+              "soupe"
+            ]
           },
           {
             "name": "Saabzi",
             "description": "Épinards afghans longuement mijotés aux herbes fraîches, aneth, coriandre, piment vert. Une verdeur profonde et parfumée.",
             "price": null,
-            "tags": ["végétarien"]
+            "tags": [
+              "végétarien"
+            ]
           }
         ]
       },
@@ -40,19 +48,25 @@
             "name": "Kabuli Pulao",
             "description": "Le plat national afghan. Riz basmati pilaf délicatement épicé, lit de carottes confites, raisins secs gonflés et amandes effilées.",
             "price": null,
-            "tags": ["signature"]
+            "tags": [
+              "signature"
+            ]
           },
           {
             "name": "Mantu",
             "description": "Petits raviolis afghans pliés à la main, farcis à la viande hachée et oignons. Servis sous une nappe de yaourt à l'ail et sauce tomate-pois chiches.",
             "price": null,
-            "tags": ["fait maison"]
+            "tags": [
+              "fait maison"
+            ]
           },
           {
             "name": "Kumpir Turc",
             "description": "Pomme de terre cuite au four, fourrée mozzarella et courgette grillée, purée de légumes, pickles de chou rouge, sauce maison au céleri.",
             "price": null,
-            "tags": ["végétarien"]
+            "tags": [
+              "végétarien"
+            ]
           }
         ]
       },
@@ -63,7 +77,9 @@
             "name": "Halwa Fleur d'Oranger",
             "description": "Semoule dorée au beurre clarifié, parfumée à la fleur d'oranger, surface étoilée d'amandes et de pistaches concassées.",
             "price": null,
-            "tags": ["végétarien"]
+            "tags": [
+              "végétarien"
+            ]
           }
         ]
       }
@@ -81,19 +97,25 @@
             "name": "Pakawra Afghan",
             "description": "Beignets de légumes avec crème de fromage frais.",
             "price": "7€",
-            "tags": ["végétarien"]
+            "tags": [
+              "végétarien"
+            ]
           },
           {
             "name": "Salataa",
             "description": "Salade à base de pain avec tomates, oignons, herbes fraîches, zaatar et huile d'olive.",
             "price": "6,50€",
-            "tags": ["végétarien"]
+            "tags": [
+              "végétarien"
+            ]
           },
           {
             "name": "Houmous",
             "description": "Pois chiches au paprika et olives, servi avec du pain.",
             "price": "7€",
-            "tags": ["végétarien"]
+            "tags": [
+              "végétarien"
+            ]
           }
         ]
       },
@@ -104,7 +126,9 @@
             "name": "Qabuli Palaw",
             "description": "Riz aux carottes et raisins, accompagné de kefta de bœuf.",
             "price": "19€",
-            "tags": ["signature"]
+            "tags": [
+              "signature"
+            ]
           },
           {
             "name": "Zereshk Polo",
@@ -120,13 +144,18 @@
             "name": "Badenjan",
             "description": "Aubergines et poivrons grillés, sauce yaourt, pain maison.",
             "price": "15,50€",
-            "tags": ["végétarien"]
+            "tags": [
+              "végétarien"
+            ]
           },
           {
             "name": "Ay khanom",
             "description": "Ravioles aux légumes, sauce tomate et sauce yaourt.",
             "price": "16,50€",
-            "tags": ["végétarien", "fait maison"]
+            "tags": [
+              "végétarien",
+              "fait maison"
+            ]
           }
         ]
       },
@@ -154,7 +183,15 @@
             "price": "6,50€"
           }
         ]
-      },
+      }
+    ]
+  },
+  "boissons": {
+    "active": true,
+    "mode": "carte",
+    "intro": "",
+    "formule": "",
+    "categories": [
       {
         "title": "Cocktails",
         "items": [
