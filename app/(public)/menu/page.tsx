@@ -7,7 +7,7 @@ import { PhotoStrip } from "@/components/site/photo-strip";
 export const metadata: Metadata = {
   title: "Menu",
   description:
-    "Menu midi et soir de Parvana — cuisine afghane à Nantes, faite maison, halal.",
+    "Menu midi et soir de Parvana — cuisine d'Asie Centrale à Nantes, faite maison, halal.",
 };
 
 export const revalidate = 60;

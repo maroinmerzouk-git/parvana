@@ -7,7 +7,7 @@ export function SiteFooter() {
         <div>
           <p className="font-display text-2xl italic text-ink">Parvana</p>
           <p className="mt-2 max-w-xs text-sm text-ink-soft">
-            Cuisine afghane à Nantes — une table de famille, ouverte aux
+            Cuisine d&apos;Asie Centrale à Nantes — une table de famille, ouverte aux
             voyageurs.
           </p>
         </div>

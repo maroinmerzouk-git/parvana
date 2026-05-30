@@ -82,7 +82,7 @@ export default function HomePage() {
               <span className="block">en persan.</span>
             </h1>
             <p className="mt-8 max-w-md text-lg text-ink-soft">
-              Une cuisine d&apos;Asie Centrale, portée par Maryam. Le voyage
+              Une cuisine d&apos;Asie Centrale, portée par l&apos;équipe Parvana. Le voyage
               commence sur l&apos;Île de Nantes — autour de plats afghans, faits
               maison, halal, partagés en cantine.
             </p>

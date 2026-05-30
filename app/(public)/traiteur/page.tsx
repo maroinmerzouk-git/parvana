@@ -5,7 +5,7 @@ import { PhotoStrip } from "@/components/site/photo-strip";
 export const metadata: Metadata = {
   title: "Traiteur",
   description:
-    "Service traiteur Parvana — cuisine afghane faite maison pour mariages, anniversaires et événements d'entreprise à Nantes.",
+    "Service traiteur Parvana — cuisine d'Asie Centrale faite maison pour mariages, anniversaires et événements d'entreprise à Nantes.",
 };
 
 export default function TraiteurPage() {

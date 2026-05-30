@@ -1,6 +1,6 @@
 # Parvana — site v3
 
-Site web du restaurant **Parvana** à Nantes (cuisine afghane). Inclut un système de
+Site web du restaurant **Parvana** à Nantes (cuisine d'Asie Centrale). Inclut un système de
 réservation avec validation manuelle par la cheffe Maryam, un panneau admin
 mobile-first et un CMS léger pour le menu.
 

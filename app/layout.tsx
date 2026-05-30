@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s · Parvana",
   },
   description:
-    "Cuisine afghane chaleureuse à Nantes. Réservation, menu midi & soir, brunch le week-end.",
+    "Cuisine d'Asie Centrale chaleureuse à Nantes. Réservation, menu midi & soir, brunch le week-end.",
   metadataBase: new URL(SITE_URL),
 };
 
