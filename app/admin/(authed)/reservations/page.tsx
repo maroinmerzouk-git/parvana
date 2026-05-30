@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { and, asc, desc, eq, gte, lt, sql, type SQL } from "drizzle-orm";
+import { and, desc, eq, gte, lt, type SQL } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { FilterBar } from "@/components/admin/filter-bar";
 import { ReservationCard } from "@/components/admin/reservation-card";
@@ -48,9 +48,8 @@ export default async function AdminReservationsPage({
       .from(schema.reservations)
       .where(conditions.length ? and(...conditions) : undefined)
       .orderBy(
-        sql`case when ${schema.reservations.date} >= current_date then 0 else 1 end`,
-        asc(schema.reservations.date),
-        asc(schema.reservations.arrivalTime),
+        desc(schema.reservations.date),
+        desc(schema.reservations.arrivalTime),
         desc(schema.reservations.createdAt),
       );
   } catch (err) {

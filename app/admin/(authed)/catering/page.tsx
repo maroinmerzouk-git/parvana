@@ -33,7 +33,10 @@ export default async function AdminCateringPage({
       .select()
       .from(schema.cateringRequests)
       .where(whereClause)
-      .orderBy(desc(schema.cateringRequests.createdAt));
+      .orderBy(
+        desc(schema.cateringRequests.eventDate),
+        desc(schema.cateringRequests.createdAt),
+      );
   } catch (err) {
     console.error("[/admin/catering] DB error:", err);
     dbError =
