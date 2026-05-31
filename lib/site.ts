@@ -52,11 +52,10 @@ export const SITE = {
     siren: "980 492 367",
     siret: "980 492 367 00019",
     rcs: "Nantes 980 492 367",
-    // TODO: confirmer la forme juridique exacte et le capital social.
-    legalForm: "Société (à compléter : SAS / SARL / EURL)",
-    shareCapital: null as string | null, // TODO: capital social si applicable
-    // TODO: confirmer le nom du directeur / de la directrice de la publication.
-    publicationDirector: "Maryam (à confirmer)",
+    legalForm: "Société à responsabilité limitée (SARL)",
+    shareCapital: "1 000 €",
+    apeCode: "56.10C — Restauration de type rapide",
+    publicationManager: "L'équipe Parvana",
     // Hébergeur du site.
     host: {
       name: "Vercel Inc.",
@@ -81,8 +80,10 @@ export const SITE = {
         url: "https://resend.com/legal/privacy-policy",
       },
     ],
-    /** Durée de conservation des données des formulaires. TODO: à valider. */
-    retention: "13 mois à compter du dernier contact",
+    /** Durée de conservation des données des formulaires (nombre de mois). */
+    retentionMonths: 13,
+    /** Libellé lisible de la durée de conservation. */
+    retention: "13 mois à compter de la demande",
     /** Date de dernière mise à jour des pages légales. */
     lastUpdated: "31 mai 2026",
   },

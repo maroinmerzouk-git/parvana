@@ -58,8 +58,9 @@ export default function MentionsLegalesPage() {
             <Row label="SIREN">{legal.siren}</Row>
             <Row label="SIRET">{legal.siret}</Row>
             <Row label="RCS">{legal.rcs}</Row>
-            <Row label="Directeur de la publication">
-              {legal.publicationDirector}
+            <Row label="Code APE">{legal.apeCode}</Row>
+            <Row label="Responsable de la publication">
+              {legal.publicationManager}
             </Row>
             <Row label="Contact">
               <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
