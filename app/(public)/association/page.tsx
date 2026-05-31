@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
 import { getAssociationSettings, ateliersDateLabel } from "@/lib/association";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Association",
   description:
     "Le projet associatif de Parvana — soutenir les femmes et les enfants sans abri en Asie centrale à travers la santé, l'éducation, le logement et l'accès au travail.",
-};
+  path: "/association",
+});
 
 export const dynamic = "force-dynamic";
 

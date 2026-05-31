@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { PhotoStrip } from "@/components/site/photo-strip";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact",
   description:
-    "Adresse, horaires et contact du restaurant Parvana à Nantes — 8 Boulevard Gisèle Halimi.",
-};
+    "Adresse, horaires et contact du restaurant Parvana à Nantes — 8 Boulevard Gisèle Halimi, Île de Nantes.",
+  path: "/contact",
+});
 
 const hours: Array<[string, string, boolean]> = [
   ["Lundi", "Fermé", true],

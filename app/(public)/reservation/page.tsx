@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { ReservationForm } from "@/components/reservation/reservation-form";
 import { PhotoStrip } from "@/components/site/photo-strip";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Réservation",
   description:
     "Réserver une table chez Parvana à Nantes. Demande validée manuellement par Maryam.",
-};
+  path: "/reservation",
+});
 
 export default function ReservationPage() {
   return (

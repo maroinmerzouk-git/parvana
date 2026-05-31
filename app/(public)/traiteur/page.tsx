@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
 import { CateringForm } from "@/components/catering/catering-form";
 import { PhotoStrip } from "@/components/site/photo-strip";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Traiteur",
   description:
-    "Service traiteur Parvana — cuisine d'Asie Centrale faite maison pour mariages, anniversaires et événements d'entreprise à Nantes.",
-};
+    "Service traiteur Parvana — cuisine d'Asie centrale faite maison pour mariages, anniversaires et événements d'entreprise à Nantes.",
+  path: "/traiteur",
+  image: {
+    url: "/photos/traiteur-buffet.jpg",
+    width: 1290,
+    height: 1686,
+    alt: "Buffet traiteur Parvana — plateaux de riz, plats mijotés et garnitures",
+  },
+});
 
 export default function TraiteurPage() {
   return (

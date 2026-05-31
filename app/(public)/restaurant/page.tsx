@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PhotoPlaceholder } from "@/components/site/photo-placeholder";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Le restaurant",
   description:
-    "Parvana, restaurant d'Asie centrale sur l'Île de Nantes — cuisine d'Asie Centrale, iranienne, ouzbèke, turque et tadjike, faite maison.",
-};
+    "Parvana, restaurant d'Asie centrale sur l'Île de Nantes — cuisine afghane, iranienne, ouzbèke, turque et tadjike, faite maison et halal.",
+  path: "/restaurant",
+});
 
 export default function RestaurantPage() {
   return (

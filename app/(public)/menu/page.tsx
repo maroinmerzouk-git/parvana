@@ -1,22 +1,78 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getCurrentMenu } from "@/lib/menu";
+import { getCurrentMenu, type Menu, type MenuService } from "@/lib/menu";
 import { MenuServiceBlock } from "@/components/menu/menu-service";
 import { PhotoStrip } from "@/components/site/photo-strip";
+import { pageMetadata, SITE, SITE_URL, absoluteUrl } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Menu",
   description:
-    "Menu midi et soir de Parvana — cuisine d'Asie Centrale à Nantes, faite maison, halal.",
-};
+    "Menu midi et soir de Parvana — cuisine d'Asie centrale à Nantes, faite maison et halal, préparée chaque matin sur place.",
+  path: "/menu",
+});
 
 export const revalidate = 60;
+
+/** Données structurées schema.org/Menu construites à partir du menu courant. */
+function menuJsonLd(menu: Menu) {
+  const section = (name: string, service: MenuService) => {
+    if (!service.active) return null;
+    const categories = service.categories
+      .filter((c) => c.items.length > 0)
+      .map((category) => ({
+        "@type": "MenuSection",
+        name: category.title,
+        hasMenuItem: category.items.map((item) => ({
+          "@type": "MenuItem",
+          name: item.name,
+          ...(item.description ? { description: item.description } : {}),
+          ...(item.price
+            ? {
+                offers: {
+                  "@type": "Offer",
+                  price: item.price.replace(/[^\d.,]/g, "").replace(",", "."),
+                  priceCurrency: SITE.currency,
+                },
+              }
+            : {}),
+        })),
+      }));
+    return {
+      "@type": "MenuSection",
+      name,
+      ...(service.intro ? { description: service.intro } : {}),
+      ...(categories.length ? { hasMenuSection: categories } : {}),
+    };
+  };
+
+  const sections = [
+    section("Déjeuner", menu.midi),
+    section("Dîner", menu.soir),
+    menu.boissons ? section("Boissons", menu.boissons) : null,
+  ].filter(Boolean);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Menu",
+    "@id": `${SITE_URL}/menu#menu`,
+    name: "Menu Parvana",
+    inLanguage: "fr",
+    url: absoluteUrl("/menu"),
+    provider: { "@id": `${SITE_URL}/#restaurant` },
+    ...(sections.length ? { hasMenuSection: sections } : {}),
+  };
+}
 
 export default async function MenuPage() {
   const { menu } = await getCurrentMenu();
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(menuJsonLd(menu)) }}
+      />
       <section className="border-b border-ink/10">
         <div className="mx-auto max-w-4xl px-6 pb-10 pt-20 md:px-10 md:pb-12 md:pt-28">
           <p className="text-xs uppercase tracking-[0.22em] text-terracotta">
