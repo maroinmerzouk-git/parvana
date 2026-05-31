@@ -44,6 +44,48 @@ export const SITE = {
     instagram: "https://instagram.com/parvana_nantes",
     instagramHandle: "@parvana_nantes",
   },
+  /**
+   * Mentions légales (LCEN) + RGPD. Les champs marqués TODO doivent être
+   * confirmés par l'exploitant avant publication.
+   */
+  legal: {
+    siren: "980 492 367",
+    siret: "980 492 367 00019",
+    rcs: "Nantes 980 492 367",
+    // TODO: confirmer la forme juridique exacte et le capital social.
+    legalForm: "Société (à compléter : SAS / SARL / EURL)",
+    shareCapital: null as string | null, // TODO: capital social si applicable
+    // TODO: confirmer le nom du directeur / de la directrice de la publication.
+    publicationDirector: "Maryam (à confirmer)",
+    // Hébergeur du site.
+    host: {
+      name: "Vercel Inc.",
+      address: "340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis",
+      url: "https://vercel.com",
+    },
+    /** Sous-traitants / destinataires des données personnelles. */
+    processors: [
+      {
+        name: "Vercel Inc.",
+        role: "Hébergement du site (États-Unis)",
+        url: "https://vercel.com/legal/privacy-policy",
+      },
+      {
+        name: "Neon Inc.",
+        role: "Base de données hébergée — stockage des demandes (États-Unis)",
+        url: "https://neon.tech/privacy-policy",
+      },
+      {
+        name: "Resend (Plus Five Five, Inc.)",
+        role: "Envoi des emails de confirmation (États-Unis)",
+        url: "https://resend.com/legal/privacy-policy",
+      },
+    ],
+    /** Durée de conservation des données des formulaires. TODO: à valider. */
+    retention: "13 mois à compter du dernier contact",
+    /** Date de dernière mise à jour des pages légales. */
+    lastUpdated: "31 mai 2026",
+  },
   /** Image partagée par défaut (Open Graph / Twitter) si aucune n'est fournie. */
   defaultOgImage: "/photos/salle-vue-ensemble.jpg",
   /** Plages horaires au format schema.org OpeningHoursSpecification. */

@@ -68,6 +68,8 @@ export async function GET() {
     `- [Traiteur](${SITE_URL}/traiteur) : prestations pour mariages, anniversaires et événements d'entreprise`,
     `- [Association](${SITE_URL}/association) : le projet associatif de Parvana`,
     `- [Contact](${SITE_URL}/contact) : adresse, horaires et coordonnées`,
+    `- [Mentions légales](${SITE_URL}/mentions-legales)`,
+    `- [Politique de confidentialité](${SITE_URL}/confidentialite)`,
     "",
     ...(menuSection.length ? ["## Aperçu du menu", "", ...menuSection] : []),
   ].join("\n");

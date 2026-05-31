@@ -65,8 +65,22 @@ export function SiteFooter() {
           </p>
         </div>
       </div>
-      <div className="border-t border-ink/10 px-6 py-4 text-center text-xs text-ink-soft md:px-10">
-        © {new Date().getFullYear()} Parvana — Tous droits réservés
+      <div className="flex flex-col items-center justify-between gap-3 border-t border-ink/10 px-6 py-4 text-center text-xs text-ink-soft sm:flex-row md:px-10">
+        <p>© {new Date().getFullYear()} Parvana — Tous droits réservés</p>
+        <nav className="flex items-center gap-4">
+          <Link
+            href="/mentions-legales"
+            className="hover:text-terracotta transition-colors"
+          >
+            Mentions légales
+          </Link>
+          <Link
+            href="/confidentialite"
+            className="hover:text-terracotta transition-colors"
+          >
+            Confidentialité
+          </Link>
+        </nav>
       </div>
     </footer>
   );

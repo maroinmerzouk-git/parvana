@@ -18,6 +18,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/traiteur", changeFrequency: "monthly", priority: 0.7 },
     { path: "/association", changeFrequency: "monthly", priority: 0.6 },
     { path: "/contact", changeFrequency: "monthly", priority: 0.7 },
+    { path: "/mentions-legales", changeFrequency: "yearly", priority: 0.2 },
+    { path: "/confidentialite", changeFrequency: "yearly", priority: 0.2 },
   ];
 
   const lastModified = new Date();

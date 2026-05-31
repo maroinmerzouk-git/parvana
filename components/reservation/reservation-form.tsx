@@ -358,6 +358,18 @@ export function ReservationForm() {
             : "Envoyer la demande"}
         </Button>
       </div>
+
+      <p className="text-xs text-ink-soft/70">
+        Vos données (nom, email, téléphone) sont utilisées uniquement pour
+        traiter votre réservation et ne sont jamais cédées à des tiers.{" "}
+        <a
+          href="/confidentialite"
+          className="text-terracotta hover:text-terracotta-dark"
+        >
+          En savoir plus
+        </a>
+        .
+      </p>
     </form>
   );
 }
