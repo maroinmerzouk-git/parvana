@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { desc, eq, ne } from "drizzle-orm";
+import { asc, eq, ne } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { CateringCard } from "@/components/admin/catering-card";
 
@@ -34,8 +34,8 @@ export default async function AdminCateringPage({
       .from(schema.cateringRequests)
       .where(whereClause)
       .orderBy(
-        desc(schema.cateringRequests.eventDate),
-        desc(schema.cateringRequests.createdAt),
+        asc(schema.cateringRequests.eventDate),
+        asc(schema.cateringRequests.createdAt),
       );
   } catch (err) {
     console.error("[/admin/catering] DB error:", err);

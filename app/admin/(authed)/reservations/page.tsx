@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { and, desc, eq, gte, lt, type SQL } from "drizzle-orm";
+import { and, asc, eq, gte, lt, type SQL } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { FilterBar } from "@/components/admin/filter-bar";
 import { ReservationCard } from "@/components/admin/reservation-card";
@@ -48,9 +48,9 @@ export default async function AdminReservationsPage({
       .from(schema.reservations)
       .where(conditions.length ? and(...conditions) : undefined)
       .orderBy(
-        desc(schema.reservations.date),
-        desc(schema.reservations.arrivalTime),
-        desc(schema.reservations.createdAt),
+        asc(schema.reservations.date),
+        asc(schema.reservations.arrivalTime),
+        asc(schema.reservations.createdAt),
       );
   } catch (err) {
     console.error("[/admin/reservations] DB error:", err);
