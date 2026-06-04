@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { asc, eq, ne } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { CateringCard } from "@/components/admin/catering-card";
+import { ScrollToToday } from "@/components/admin/scroll-to-today";
 
 export const metadata: Metadata = { title: "Traiteur — gestion" };
 export const dynamic = "force-dynamic";
@@ -44,6 +45,8 @@ export default async function AdminCateringPage({
   }
 
   const activeStatus = sp.status ?? "active";
+  const today = new Date().toISOString().slice(0, 10);
+  const nextIndex = rows.findIndex((r) => r.eventDate >= today);
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-6 md:px-6 md:py-10">
@@ -56,11 +59,16 @@ export default async function AdminCateringPage({
         </h1>
       </header>
 
-      <div className="mb-6 flex flex-wrap gap-2 rounded-lg border border-ink/10 bg-sand/60 p-3">
-        <FilterPill href="/admin/catering" label="Actives" active={activeStatus === "active"} />
-        <FilterPill href="/admin/catering?status=new" label="Nouvelles" active={activeStatus === "new"} />
-        <FilterPill href="/admin/catering?status=seen" label="Vues" active={activeStatus === "seen"} />
-        <FilterPill href="/admin/catering?status=archived" label="Archivées" active={activeStatus === "archived"} />
+      <div
+        id="admin-filters"
+        className="sticky top-14 z-30 -mx-4 mb-6 bg-beige/90 px-4 pb-2 pt-1 backdrop-blur md:-mx-6 md:px-6"
+      >
+        <div className="flex flex-wrap gap-2 rounded-lg border border-ink/10 bg-sand/60 p-3">
+          <FilterPill href="/admin/catering" label="Actives" active={activeStatus === "active"} />
+          <FilterPill href="/admin/catering?status=new" label="Nouvelles" active={activeStatus === "new"} />
+          <FilterPill href="/admin/catering?status=seen" label="Vues" active={activeStatus === "seen"} />
+          <FilterPill href="/admin/catering?status=archived" label="Archivées" active={activeStatus === "archived"} />
+        </div>
       </div>
 
       {dbError ? (
@@ -79,13 +87,15 @@ export default async function AdminCateringPage({
         </div>
       ) : (
         <ul className="space-y-3">
-          {rows.map((r) => (
-            <li key={r.id}>
+          {rows.map((r, i) => (
+            <li key={r.id} id={i === nextIndex ? "admin-next" : undefined}>
               <CateringCard request={r} />
             </li>
           ))}
         </ul>
       )}
+
+      {nextIndex >= 0 && <ScrollToToday targetId="admin-next" />}
     </section>
   );
 }

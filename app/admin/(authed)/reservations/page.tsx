@@ -3,6 +3,7 @@ import { and, asc, eq, gte, lt, type SQL } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { FilterBar } from "@/components/admin/filter-bar";
 import { ReservationCard } from "@/components/admin/reservation-card";
+import { ScrollToToday } from "@/components/admin/scroll-to-today";
 
 export const metadata: Metadata = { title: "Réservations" };
 export const dynamic = "force-dynamic";
@@ -22,6 +23,7 @@ export default async function AdminReservationsPage({
   searchParams: Promise<SearchParams>;
 }) {
   const sp = await searchParams;
+  const today = new Date().toISOString().slice(0, 10);
 
   let rows: Array<typeof schema.reservations.$inferSelect> = [];
   let dbError: string | null = null;
@@ -36,7 +38,6 @@ export default async function AdminReservationsPage({
     if (sp.service && VALID_SERVICE.has(sp.service)) {
       conditions.push(eq(schema.reservations.service, sp.service));
     }
-    const today = new Date().toISOString().slice(0, 10);
     if (sp.when === "upcoming") {
       conditions.push(gte(schema.reservations.date, today));
     } else if (sp.when === "past") {
@@ -58,6 +59,8 @@ export default async function AdminReservationsPage({
       "Impossible de charger les réservations. La base de données n'est pas configurée ou n'est pas joignable.";
   }
 
+  const nextIndex = rows.findIndex((r) => r.date >= today);
+
   return (
     <section className="mx-auto max-w-5xl px-4 py-6 md:px-6 md:py-10">
       <header className="mb-6 flex flex-col gap-1">
@@ -69,8 +72,13 @@ export default async function AdminReservationsPage({
         </h1>
       </header>
 
-      <div className="mb-6 rounded-lg border border-ink/10 bg-sand/60 p-4">
-        <FilterBar />
+      <div
+        id="admin-filters"
+        className="sticky top-14 z-30 -mx-4 mb-6 bg-beige/90 px-4 pb-2 pt-1 backdrop-blur md:-mx-6 md:px-6"
+      >
+        <div className="rounded-lg border border-ink/10 bg-sand/60 p-4">
+          <FilterBar />
+        </div>
       </div>
 
       {dbError ? (
@@ -89,13 +97,15 @@ export default async function AdminReservationsPage({
         </div>
       ) : (
         <ul className="space-y-3">
-          {rows.map((r) => (
-            <li key={r.id}>
+          {rows.map((r, i) => (
+            <li key={r.id} id={i === nextIndex ? "admin-next" : undefined}>
               <ReservationCard reservation={r} />
             </li>
           ))}
         </ul>
       )}
+
+      {nextIndex >= 0 && <ScrollToToday targetId="admin-next" />}
     </section>
   );
 }
