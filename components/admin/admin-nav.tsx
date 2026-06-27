@@ -87,6 +87,13 @@ export async function AdminNav() {
           </Link>
 
           <Link
+            href="/admin/horaires"
+            className="rounded-full px-3 py-2 text-ink hover:bg-beige"
+          >
+            Horaires
+          </Link>
+
+          <Link
             href="/admin/association"
             className="rounded-full px-3 py-2 text-ink hover:bg-beige"
           >

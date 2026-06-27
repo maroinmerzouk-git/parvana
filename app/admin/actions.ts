@@ -18,6 +18,8 @@ import {
 import { menuSchema } from "@/lib/schemas/menu";
 import { associationSettingsSchema } from "@/lib/schemas/association";
 import { ASSOCIATION_SETTINGS_KEY } from "@/lib/association";
+import { openingHoursSchema } from "@/lib/schemas/hours";
+import { OPENING_HOURS_SETTINGS_KEY } from "@/lib/hours";
 
 const idSchema = z.string().uuid();
 const rejectSchema = z.object({
@@ -242,6 +244,43 @@ export async function saveAssociationSettings(
 
   revalidatePath("/association");
   revalidatePath("/admin/association");
+  return { ok: true };
+}
+
+type SaveOpeningHoursResult =
+  | { ok: true }
+  | { ok: false; error: string; details?: unknown };
+
+export async function saveOpeningHours(
+  raw: unknown,
+): Promise<SaveOpeningHoursResult> {
+  const userId = await requireAuth();
+
+  const validated = openingHoursSchema.safeParse(raw);
+  if (!validated.success) {
+    return {
+      ok: false,
+      error: "Les horaires ne respectent pas le format attendu.",
+      details: validated.error.flatten(),
+    };
+  }
+
+  const db = getDb();
+  await db
+    .insert(schema.siteSettings)
+    .values({
+      key: OPENING_HOURS_SETTINGS_KEY,
+      data: validated.data,
+      updatedBy: userId,
+      updatedAt: new Date(),
+    })
+    .onConflictDoUpdate({
+      target: schema.siteSettings.key,
+      set: { data: validated.data, updatedBy: userId, updatedAt: new Date() },
+    });
+
+  revalidatePath("/contact");
+  revalidatePath("/admin/horaires");
   return { ok: true };
 }
 

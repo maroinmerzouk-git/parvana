@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { PhotoStrip } from "@/components/site/photo-strip";
 import { pageMetadata } from "@/lib/site";
+import { getOpeningHours, weeklyHours } from "@/lib/hours";
 
 export const metadata: Metadata = pageMetadata({
   title: "Contact",
@@ -10,15 +11,7 @@ export const metadata: Metadata = pageMetadata({
   path: "/contact",
 });
 
-const hours: Array<[string, string, boolean]> = [
-  ["Lundi", "Fermé", true],
-  ["Mardi", "12h00 — 14h30 · 19h00 — 22h00", false],
-  ["Mercredi", "12h00 — 14h30 · 19h00 — 22h00", false],
-  ["Jeudi", "12h00 — 14h30 · 19h00 — 22h00", false],
-  ["Vendredi", "12h00 — 14h30 · 19h00 — 22h00", false],
-  ["Samedi", "11h00 — 14h30 · brunch", false],
-  ["Dimanche", "11h00 — 14h30 · brunch", false],
-];
+export const dynamic = "force-dynamic";
 
 // TODO: remplacer par les permalinks réels des 4 derniers posts Instagram fournis par Maryam.
 // Format attendu : https://www.instagram.com/p/XXXXXXXXX/
@@ -29,7 +22,10 @@ const instagramPosts: string[] = [
   "https://www.instagram.com/parvana_nantes/",
 ];
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getOpeningHours();
+  const hours = weeklyHours(settings);
+
   return (
     <>
       <section className="border-b border-ink/10">
@@ -119,24 +115,23 @@ export default function ContactPage() {
               Horaires
             </p>
             <ul className="mt-4 divide-y divide-ink/10 border-y border-ink/10">
-              {hours.map(([day, time, closed]) => (
+              {hours.map(({ key, label, text, closed }) => (
                 <li
-                  key={day}
+                  key={key}
                   className="flex items-center justify-between py-3"
                 >
-                  <span className="font-display text-lg text-ink">{day}</span>
+                  <span className="font-display text-lg text-ink">{label}</span>
                   <span
                     className={`text-sm uppercase tracking-[0.12em] ${closed ? "text-ink-soft/50" : "text-ink-soft"}`}
                   >
-                    {time}
+                    {text}
                   </span>
                 </li>
               ))}
             </ul>
-            <p className="mt-6 text-sm text-ink-soft">
-              Service du soir 19h00 — 22h00 du mardi au vendredi. Brunch le
-              week-end.
-            </p>
+            {settings.note && (
+              <p className="mt-6 text-sm text-ink-soft">{settings.note}</p>
+            )}
           </div>
         </div>
       </section>
