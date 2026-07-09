@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { getDb, schema } from "@/db";
 import { reservationSchema } from "@/lib/schemas/reservation";
+import { getOpeningHours, reservationHoursError } from "@/lib/hours";
 import {
   adminAddress,
   fromAddress,
@@ -36,6 +37,18 @@ export async function POST(request: Request) {
     );
   }
   const data = parsed.data;
+
+  // La table n'est réservable que lorsque le restaurant est ouvert : on revérifie
+  // la date et le créneau contre les horaires d'ouverture (jour fermé, service
+  // indisponible, créneau hors plage) — l'UI le fait déjà, ceci ferme la porte
+  // aux requêtes forgées ou aux horaires modifiés entre-temps.
+  const hoursError = reservationHoursError(await getOpeningHours(), data);
+  if (hoursError) {
+    return NextResponse.json(
+      { error: hoursError, details: { date: [hoursError] } },
+      { status: 400 },
+    );
+  }
 
   let db: ReturnType<typeof getDb>;
   try {

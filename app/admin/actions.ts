@@ -280,6 +280,7 @@ export async function saveOpeningHours(
     });
 
   revalidatePath("/contact");
+  revalidatePath("/reservation"); // les créneaux réservables dérivent des horaires
   revalidatePath("/admin/horaires");
   return { ok: true };
 }

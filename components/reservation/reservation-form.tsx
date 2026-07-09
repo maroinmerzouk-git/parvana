@@ -9,8 +9,15 @@ import { CalendarIcon } from "lucide-react";
 import {
   reservationSchema,
   type ReservationInput,
-  SLOTS,
 } from "@/lib/schemas/reservation";
+import {
+  reservationDayOptions,
+  reservationHoursError,
+  closedDaysOfWeek,
+  type OpeningHours,
+  type ReservationService,
+} from "@/lib/hours";
+import { DAY_KEYS, DAY_LABELS_FR } from "@/lib/schemas/hours";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,8 +44,22 @@ type SubmissionState =
   | { kind: "success"; name: string }
   | { kind: "error"; message: string };
 
-export function ReservationForm() {
+export function ReservationForm({ hours }: { hours: OpeningHours }) {
   const [state, setState] = React.useState<SubmissionState>({ kind: "idle" });
+
+  // Jours fermés (fériés hebdomadaires) désactivés dans le calendrier.
+  const closedDows = React.useMemo(() => closedDaysOfWeek(hours), [hours]);
+  const closedLabel = React.useMemo(() => {
+    const labels = DAY_KEYS.filter(
+      (k) => hours.days[k].closed || hours.days[k].ranges.length === 0,
+    ).map((k) => DAY_LABELS_FR[k].toLowerCase());
+    if (labels.length === 0) return null;
+    if (labels.length === 1) return `Le restaurant est fermé le ${labels[0]}.`;
+    const last = labels[labels.length - 1];
+    return `Le restaurant est fermé le ${labels
+      .slice(0, -1)
+      .join(", ")} et le ${last}.`;
+  }, [hours]);
 
   const {
     control,
@@ -64,20 +85,43 @@ export function ReservationForm() {
   });
 
   const service = watch("service");
+  const date = watch("date");
   const arrivalTime = watch("arrivalTime");
-  const slots = SLOTS[service];
 
-  // Reset arrivalTime when switching service if previous slot doesn't exist in new service
+  // Créneaux et disponibilité des services dérivés de la date choisie et des
+  // horaires d'ouverture (plus de créneaux en dur).
+  const dayOptions = React.useMemo(
+    () => (date ? reservationDayOptions(hours, date) : null),
+    [hours, date],
+  );
+  const slots = dayOptions ? dayOptions[service].slots : [];
+
+  // Si le service sélectionné n'est pas proposé ce jour-là, basculer vers
+  // l'autre service quand il l'est.
   React.useEffect(() => {
-    if (
-      arrivalTime &&
-      !(slots as readonly string[]).includes(arrivalTime)
-    ) {
+    if (!dayOptions) return;
+    if (!dayOptions[service].available) {
+      const other: ReservationService = service === "midi" ? "soir" : "midi";
+      if (dayOptions[other].available) setValue("service", other);
+    }
+  }, [dayOptions, service, setValue]);
+
+  // Réinitialiser le créneau s'il n'existe plus dans la liste courante
+  // (changement de date ou de service).
+  React.useEffect(() => {
+    if (arrivalTime && !slots.includes(arrivalTime)) {
       setValue("arrivalTime", "");
     }
-  }, [service, arrivalTime, slots, setValue]);
+  }, [arrivalTime, slots, setValue]);
 
   const onSubmit = async (values: ReservationInput) => {
+    // Garde-fou : bloque une soumission incohérente avec les horaires même si
+    // l'UI a été contournée (le serveur revérifie de toute façon).
+    const hoursError = reservationHoursError(hours, values);
+    if (hoursError) {
+      setState({ kind: "error", message: hoursError });
+      return;
+    }
     setState({ kind: "submitting" });
     try {
       const res = await fetch("/api/reservations", {
@@ -151,27 +195,45 @@ export function ReservationForm() {
             >
               {(
                 [
-                  ["midi", "Déjeuner", "12h00 — 14h30"],
-                  ["soir", "Dîner", "19h00 — 22h00"],
+                  ["midi", "Déjeuner"],
+                  ["soir", "Dîner"],
                 ] as const
-              ).map(([value, label, sub]) => (
-                <label
-                  key={value}
-                  htmlFor={`service-${value}`}
-                  className={cn(
-                    "flex cursor-pointer items-start gap-3 rounded-md border bg-beige p-4 transition-colors",
-                    field.value === value
-                      ? "border-terracotta ring-1 ring-terracotta"
-                      : "border-ink/20 hover:border-ink/40",
-                  )}
-                >
-                  <RadioGroupItem value={value} id={`service-${value}`} />
-                  <div>
-                    <p className="font-display text-lg text-ink">{label}</p>
-                    <p className="text-xs text-ink-soft">{sub}</p>
-                  </div>
-                </label>
-              ))}
+              ).map(([value, label]) => {
+                const opt = dayOptions?.[value];
+                // Avant de choisir une date, les deux services restent
+                // sélectionnables ; ensuite, on désactive ce qui est fermé.
+                const disabled = dayOptions ? !opt?.available : false;
+                const sub = !date
+                  ? "Choisissez d'abord une date"
+                  : opt?.available
+                    ? opt.rangeText
+                    : "Non proposé ce jour-là";
+                return (
+                  <label
+                    key={value}
+                    htmlFor={`service-${value}`}
+                    className={cn(
+                      "flex items-start gap-3 rounded-md border bg-beige p-4 transition-colors",
+                      disabled
+                        ? "cursor-not-allowed border-ink/10 opacity-50"
+                        : "cursor-pointer",
+                      !disabled && field.value === value
+                        ? "border-terracotta ring-1 ring-terracotta"
+                        : !disabled && "border-ink/20 hover:border-ink/40",
+                    )}
+                  >
+                    <RadioGroupItem
+                      value={value}
+                      id={`service-${value}`}
+                      disabled={disabled}
+                    />
+                    <div>
+                      <p className="font-display text-lg text-ink">{label}</p>
+                      <p className="text-xs text-ink-soft">{sub}</p>
+                    </div>
+                  </label>
+                );
+              })}
             </RadioGroup>
           )}
         />
@@ -214,7 +276,7 @@ export function ReservationForm() {
                         if (d) field.onChange(format(d, "yyyy-MM-dd"));
                       }}
                       disabled={[
-                        { dayOfWeek: [1] }, // lundi fermé
+                        { dayOfWeek: closedDows }, // jours fermés (horaires)
                         { before: new Date() },
                       ]}
                       autoFocus
@@ -225,9 +287,9 @@ export function ReservationForm() {
             }}
           />
           {errors.date && <FieldError>{errors.date.message}</FieldError>}
-          <p className="text-xs text-ink-soft/80">
-            Le restaurant est fermé le lundi.
-          </p>
+          {closedLabel && (
+            <p className="text-xs text-ink-soft/80">{closedLabel}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -236,9 +298,21 @@ export function ReservationForm() {
             control={control}
             name="arrivalTime"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                onValueChange={field.onChange}
+                disabled={slots.length === 0}
+              >
                 <SelectTrigger id="arrivalTime">
-                  <SelectValue placeholder="Choisir un créneau" />
+                  <SelectValue
+                    placeholder={
+                      !date
+                        ? "Choisissez d'abord une date"
+                        : slots.length === 0
+                          ? "Aucun créneau ce jour-là"
+                          : "Choisir un créneau"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {slots.map((s) => (

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ReservationForm } from "@/components/reservation/reservation-form";
 import { PhotoStrip } from "@/components/site/photo-strip";
 import { pageMetadata } from "@/lib/site";
+import { getOpeningHours } from "@/lib/hours";
 
 export const metadata: Metadata = pageMetadata({
   title: "Réservation",
@@ -10,7 +11,8 @@ export const metadata: Metadata = pageMetadata({
   path: "/reservation",
 });
 
-export default function ReservationPage() {
+export default async function ReservationPage() {
+  const hours = await getOpeningHours();
   return (
     <>
       <section className="border-b border-ink/10">
@@ -47,7 +49,7 @@ export default function ReservationPage() {
 
       <section>
         <div className="mx-auto max-w-2xl px-6 py-16 md:px-10 md:py-20">
-          <ReservationForm />
+          <ReservationForm hours={hours} />
         </div>
       </section>
     </>
