@@ -31,6 +31,7 @@ export async function createOrder(
       pickupTime: state.data.pickupTime ?? "Dès que possible",
       totalCents,
       menuVersion: state.data.menuVersion ?? null,
+      note: state.data.detailsNote?.trim() ? state.data.detailsNote.trim() : null,
     })
     .returning({ id: schema.orders.id });
 

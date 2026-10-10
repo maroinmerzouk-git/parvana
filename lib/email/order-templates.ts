@@ -10,6 +10,7 @@ export interface OrderEmailData {
   pickupTime: string;
   items: CartLine[];
   totalCents: number | null;
+  note?: string | null;
 }
 
 const COLORS = {
@@ -87,6 +88,7 @@ export function orderAdminNotificationEmail(
      <p style="margin:0 0 16px 0;color:${COLORS.inkSoft};font-size:13px;">Via WhatsApp · paiement sur place</p>
      ${itemsTable(d.items)}
      <p style="margin:0 0 16px 0;">${totalLine}</p>
+     ${d.note ? `<p style="margin:0 0 16px 0;background:${COLORS.beige};border-left:3px solid ${COLORS.terracotta};padding:12px 16px;font-size:14px;"><strong>Plats souhaités :</strong> ${escapeHtml(d.note)}</p>` : ""}
      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px 0;">
        <tr><td style="padding:6px 0;width:40%;color:${COLORS.inkSoft};font-size:13px;">Client</td><td style="padding:6px 0;font-size:14px;">${escapeHtml(d.customerName)}</td></tr>
        <tr><td style="padding:6px 0;color:${COLORS.inkSoft};font-size:13px;">WhatsApp</td><td style="padding:6px 0;font-size:14px;">${escapeHtml(d.phone)}</td></tr>

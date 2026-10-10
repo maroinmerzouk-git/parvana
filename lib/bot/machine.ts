@@ -192,6 +192,19 @@ function showCategories(
   };
 }
 
+/** Le panier contient-il des plats (food) dont il faut préciser le détail ? */
+function needsDetails(cart: CartLine[]): boolean {
+  return cart.some((l) => l.serviceKey === "midi" || l.serviceKey === "soir");
+}
+
+function goPickup(deps: Deps, data: ConversationData): AdvanceResult {
+  const options = buildPickupOptions(deps.hours, deps.now.date, deps.now.time);
+  return {
+    next: { step: "pickup_time", data },
+    outbound: [interactive(flow.pickupTimeList(options))],
+  };
+}
+
 function goCheckout(deps: Deps, data: ConversationData): AdvanceResult {
   const cart = data.cart ?? [];
   if (cart.length === 0) {
@@ -208,11 +221,20 @@ function goCheckout(deps: Deps, data: ConversationData): AdvanceResult {
       };
     return startOrder(deps, [text("Votre panier est vide 🙂")]);
   }
-  const options = buildPickupOptions(deps.hours, deps.now.date, deps.now.time);
-  return {
-    next: { step: "pickup_time", data },
-    outbound: [interactive(flow.pickupTimeList(options))],
-  };
+
+  // Menu food non nommé → on demande les plats souhaités en texte libre.
+  if (needsDetails(cart) && !data.detailsNote) {
+    return {
+      next: { step: "details", data },
+      outbound: [
+        text(
+          "Dernière étape avant l'heure : précisez les plats souhaités (ex. « 2 Kaboli Pulao, 1 Mantu, 1 Baklava »).",
+        ),
+      ],
+    };
+  }
+
+  return goPickup(deps, data);
 }
 
 // --------------------------------------------------------------------------
@@ -365,6 +387,16 @@ export async function advance(
       return reprompt(state, interactive(flow.cartView(data.cart ?? [])));
     }
 
+    case "details": {
+      const note = (msg.text ?? "").trim();
+      if (note.length < 2)
+        return reprompt(
+          state,
+          text("Merci de décrire vos plats en quelques mots 🙂"),
+        );
+      return goPickup(deps, { ...data, detailsNote: note.slice(0, 500) });
+    }
+
     case "pickup_time": {
       const sel = msg.reply?.id;
       if (!sel || !sel.startsWith("time:")) {
@@ -388,7 +420,12 @@ export async function advance(
         next: { step: "confirm", data: { ...data, customerName: name } },
         outbound: [
           interactive(
-            flow.confirmRecap(data.cart ?? [], data.pickupTime ?? "", name),
+            flow.confirmRecap(
+              data.cart ?? [],
+              data.pickupTime ?? "",
+              name,
+              data.detailsNote,
+            ),
           ),
         ],
       };
@@ -412,6 +449,7 @@ export async function advance(
               data.cart ?? [],
               data.pickupTime ?? "",
               data.customerName ?? "",
+              data.detailsNote,
             ),
           ),
         );

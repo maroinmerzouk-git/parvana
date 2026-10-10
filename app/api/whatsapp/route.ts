@@ -98,6 +98,7 @@ async function handleMessage(msg: InboundMessage): Promise<void> {
         pickupTime: state.data.pickupTime ?? "",
         items: state.data.cart ?? [],
         totalCents: order.totalCents,
+        note: state.data.detailsNote ?? null,
       });
       return order;
     },

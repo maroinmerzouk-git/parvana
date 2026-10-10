@@ -21,6 +21,7 @@ export interface ConversationData {
   catPage?: number; // pagination dans la liste d'articles
   pendingItemId?: string; // article en attente de quantité
   cart?: CartLine[];
+  detailsNote?: string; // plats souhaités (texte libre, menu food non nommé)
   pickupTime?: string; // libellé lisible ("12h30" / "Dès que possible")
   customerName?: string;
 }
@@ -34,6 +35,7 @@ export type Step =
   | "quantity"
   | "after_add"
   | "cart"
+  | "details"
   | "pickup_time"
   | "name"
   | "confirm";

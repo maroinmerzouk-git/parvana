@@ -73,7 +73,7 @@ export function itemList(
   const rows = slice.map((it) => ({
     id: `item:${it.id}`,
     title: it.name,
-    description: priceLabel(it.priceCents),
+    description: it.priceNote ?? priceLabel(it.priceCents),
   }));
   if (cat.items.length > start + PAGE_SIZE) {
     rows.push({ id: "more:item", title: "Voir plus ▸", description: "" });
@@ -165,8 +165,10 @@ export function confirmRecap(
   cart: CartLine[],
   pickupTime: string,
   name: string,
+  details?: string,
 ): InteractiveMessage {
-  const body = `${cartSummary(cart)}\n\n👤 ${name}\n🕒 Retrait : ${pickupTime}\n💶 Paiement sur place.\n\nJe confirme la commande ?`;
+  const detailsLine = details ? `\n🍽️ Plats : ${details}` : "";
+  const body = `${cartSummary(cart)}${detailsLine}\n\n👤 ${name}\n🕒 Retrait : ${pickupTime}\n💶 Paiement sur place.\n\nJe confirme la commande ?`;
   return {
     kind: "buttons",
     body,

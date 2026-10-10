@@ -103,9 +103,15 @@ test("happy path: greet → order confirmed", async () => {
   assert.equal(cartTotals(r.next.data.cart ?? []).totalCents, 3800);
   state = r.next;
 
+  // soir = food → le bot demande d'abord le détail des plats.
   r = await advance(reply("after:checkout"), state, "336", deps);
+  assert.equal(r.next.step, "details");
+  assert.ok(r.outbound[0].type === "text");
+  state = r.next;
+
+  r = await advance(txt("2 Qabuli, 1 Baklava"), state, "336", deps);
   assert.equal(r.next.step, "pickup_time");
-  // ASAP + créneaux à venir aujourd'hui
+  assert.equal(r.next.data.detailsNote, "2 Qabuli, 1 Baklava");
   assert.ok(r.outbound[0].type === "interactive");
   state = r.next;
 

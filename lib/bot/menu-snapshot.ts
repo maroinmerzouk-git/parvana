@@ -1,5 +1,6 @@
 import type { Menu, MenuService } from "@/lib/schemas/menu";
-import { parsePriceCents } from "./price";
+import { formatCents, parsePriceCents } from "./price";
+import { parseCourseMenu } from "./course-menu";
 
 // Transforme le menu publié du jour (JSONB libre, sans identifiants) en un
 // catalogue sélectionnable et indexable pour le bot. Chaque article reçoit un
@@ -14,6 +15,7 @@ export interface CatalogItem {
   id: string; // "<service>:<catIdx>:<itemIdx>"
   name: string;
   priceCents: number | null; // null = plat au forfait (formule midi)
+  priceNote?: string; // libellé de prix alternatif (ex. fourchette "15 € à 24 €")
 }
 
 export interface CatalogCategory {
@@ -42,7 +44,7 @@ const SERVICE_LABELS: Record<ServiceKey, string> = {
 /** Catégories brutes (sans id) — on attribue les ids dans buildCatalog. */
 interface RawCategory {
   title: string;
-  items: { name: string; priceCents: number | null }[];
+  items: { name: string; priceCents: number | null; priceNote?: string }[];
 }
 
 /**
@@ -85,7 +87,7 @@ export function parseBoissonsBlob(text: string): RawCategory[] {
   return categories.filter((c) => c.items.length > 0);
 }
 
-/** Catégories brutes d'un service midi/soir (mode carte). */
+/** Catégories brutes d'un service midi/soir (mode carte, plats nommés). */
 function rawCategoriesForService(service: MenuService): RawCategory[] {
   return service.categories.map((cat) => ({
     title: cat.title,
@@ -94,6 +96,44 @@ function rawCategoriesForService(service: MenuService): RawCategory[] {
       priceCents: parsePriceCents(item.price),
     })),
   }));
+}
+
+/**
+ * Catégories brutes dérivées du texte libre d'un service food : une catégorie
+ * « Formules » et une catégorie « À la carte » (prix par plat). Les plats n'y
+ * sont pas nommés — le client précise ses choix en texte à la commande.
+ */
+function courseCategoriesFromText(text: string): RawCategory[] {
+  const { courses, formules } = parseCourseMenu(text);
+  const cats: RawCategory[] = [];
+  if (formules.length > 0) {
+    cats.push({
+      title: "Formules",
+      items: formules.map((f) => ({ name: f.name, priceCents: f.priceCents })),
+    });
+  }
+  if (courses.length > 0) {
+    cats.push({
+      title: "À la carte",
+      items: courses.map((c) => ({
+        name: c.name,
+        priceCents: c.priceCents,
+        priceNote:
+          c.priceMaxCents != null && c.priceMaxCents !== c.priceCents
+            ? `${formatCents(c.priceCents)} à ${formatCents(c.priceMaxCents)}`
+            : undefined,
+      })),
+    });
+  }
+  return cats;
+}
+
+/** Catégories food : plats nommés (mode carte) sinon dérivées du texte libre. */
+function foodCategories(service: MenuService): RawCategory[] {
+  if (service.categories.length > 0) return rawCategoriesForService(service);
+  if (service.text && service.text.trim() !== "")
+    return courseCategoriesFromText(service.text);
+  return [];
 }
 
 /** Assemble un service du catalogue (ids inclus) à partir de catégories brutes. */
@@ -109,6 +149,7 @@ function assemble(
         id: `${key}:${ci}:${ii}`,
         name: item.name,
         priceCents: item.priceCents,
+        ...(item.priceNote ? { priceNote: item.priceNote } : {}),
       })),
     }))
     .filter((cat) => cat.items.length > 0);
@@ -128,11 +169,11 @@ export function buildCatalog(menu: Menu, version: number | null): Catalog {
   const services: CatalogService[] = [];
 
   if (menu.midi.active) {
-    const s = assemble("midi", formuleOf(menu.midi), rawCategoriesForService(menu.midi));
+    const s = assemble("midi", formuleOf(menu.midi), foodCategories(menu.midi));
     if (s) services.push(s);
   }
   if (menu.soir.active) {
-    const s = assemble("soir", formuleOf(menu.soir), rawCategoriesForService(menu.soir));
+    const s = assemble("soir", formuleOf(menu.soir), foodCategories(menu.soir));
     if (s) services.push(s);
   }
   if (menu.boissons?.active) {
