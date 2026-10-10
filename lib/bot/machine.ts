@@ -137,6 +137,38 @@ function addToCart(cart: CartLine[], line: CartLine): CartLine[] {
 // --------------------------------------------------------------------------
 // Démarrage / reprise de commande
 // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
+// Repli « saisie libre » : certains clients/numéros ne renvoient pas les
+// réponses interactives (boutons/listes) au webhook. On accepte donc aussi du
+// texte à chaque étape : un numéro (1, 2, 3…) ou un mot-clé.
+// --------------------------------------------------------------------------
+function norm(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+/** "2" → index 1 (0-based) si dans [1..len], sinon -1. */
+function typedIndex(t: string, len: number): number {
+  const n = Number.parseInt(t, 10);
+  return Number.isInteger(n) && n >= 1 && n <= len ? n - 1 : -1;
+}
+
+/** Résout un service depuis une saisie libre ("midi", "2", "boissons"…). */
+function serviceFromText(t: string, catalog: Catalog): ServiceKey | null {
+  const n = norm(t);
+  const byNum = typedIndex(n, catalog.services.length);
+  if (byNum >= 0) return catalog.services[byNum].key;
+  const has = (k: ServiceKey) =>
+    catalog.services.some((s) => s.key === k) ? k : null;
+  if (n.includes("midi")) return has("midi");
+  if (n.includes("soir")) return has("soir");
+  if (n.includes("boisson") || n.includes("drink")) return has("boissons");
+  return null;
+}
+
 function startOrder(deps: Deps, lead: Outbound[] = []): AdvanceResult {
   const version = deps.catalog.version;
 
@@ -275,7 +307,8 @@ export async function advance(
 
   switch (state.step) {
     case "service": {
-      const key = picked(msg, "svc") as ServiceKey | null;
+      let key = picked(msg, "svc") as ServiceKey | null;
+      if (!key && msg.text) key = serviceFromText(msg.text, deps.catalog);
       const service = key ? findService(deps.catalog, key) : undefined;
       if (!service) return reprompt(state, interactive(flow.serviceButtons(deps.catalog)));
       return showCategories(service, data);
@@ -286,8 +319,18 @@ export async function advance(
         ? findService(deps.catalog, data.serviceKey)
         : undefined;
       if (!service) return startOrder(deps);
+      let ci = -1;
       const raw = picked(msg, "cat");
-      const ci = raw != null ? Number(raw) : NaN;
+      if (raw != null) ci = Number(raw);
+      else if (msg.text) {
+        const n = norm(msg.text);
+        const byNum = typedIndex(n, service.categories.length);
+        if (byNum >= 0) ci = byNum;
+        else
+          ci = service.categories.findIndex(
+            (c) => n.length >= 3 && norm(c.title).includes(n),
+          );
+      }
       if (!Number.isInteger(ci) || ci < 0 || ci >= service.categories.length)
         return reprompt(state, interactive(flow.categoryList(service)));
       return {
@@ -302,25 +345,35 @@ export async function advance(
         : undefined;
       const ci = data.catIndex ?? 0;
       if (!service || !service.categories[ci]) return startOrder(deps);
+      const page = data.catPage ?? 0;
+      const nt = norm(msg.text ?? "");
 
-      if (msg.reply?.id === "more:item") {
-        const page = (data.catPage ?? 0) + 1;
+      if (msg.reply?.id === "more:item" || nt === "plus" || nt === "suite") {
+        const np = page + 1;
         return {
-          next: { step: "item", data: { ...data, catPage: page } },
-          outbound: [interactive(flow.itemList(service, ci, page))],
+          next: { step: "item", data: { ...data, catPage: np } },
+          outbound: [interactive(flow.itemList(service, ci, np))],
         };
       }
 
-      const itemId = picked(msg, "item");
+      let itemId = picked(msg, "item");
+      if (!itemId && msg.text) {
+        const items = service.categories[ci].items;
+        const start = page * flow.PAGE_SIZE;
+        const pageItems = items.slice(start, start + flow.PAGE_SIZE);
+        const byNum = typedIndex(nt, pageItems.length);
+        if (byNum >= 0) itemId = pageItems[byNum].id;
+        else {
+          const found = items.find((it) => nt.length >= 3 && norm(it.name).includes(nt));
+          if (found) itemId = found.id;
+        }
+      }
       const resolved = itemId ? resolveItem(deps.catalog, itemId) : null;
       if (!resolved)
-        return reprompt(
-          state,
-          interactive(flow.itemList(service, ci, data.catPage ?? 0)),
-        );
+        return reprompt(state, interactive(flow.itemList(service, ci, page)));
 
       return {
-        next: { step: "quantity", data: { ...data, pendingItemId: itemId! } },
+        next: { step: "quantity", data: { ...data, pendingItemId: resolved.item.id } },
         outbound: [interactive(flow.quantityButtons(resolved.item))],
       };
     }
@@ -353,7 +406,15 @@ export async function advance(
     }
 
     case "after_add": {
-      const choice = picked(msg, "after");
+      let choice = picked(msg, "after");
+      if (!choice && msg.text) {
+        const n = norm(msg.text);
+        if (n.includes("panier") || n === "2") choice = "cart";
+        else if (n.includes("command") || n.includes("payer") || n.includes("termin") || n === "3")
+          choice = "checkout";
+        else if (n.includes("continu") || n.includes("autre") || n.includes("ajout") || n === "1")
+          choice = "more";
+      }
       if (choice === "cart") {
         return {
           next: { step: "cart", data },
@@ -372,7 +433,15 @@ export async function advance(
     }
 
     case "cart": {
-      const choice = picked(msg, "cart");
+      let choice = picked(msg, "cart");
+      if (!choice && msg.text) {
+        const n = norm(msg.text);
+        if (n.includes("command") || n.includes("payer") || n.includes("termin") || n === "2")
+          choice = "checkout";
+        else if (n.includes("vider") || n.includes("supprim") || n.includes("annul") || n === "3")
+          choice = "clear";
+        else if (n.includes("continu") || n.includes("ajout") || n === "1") choice = "more";
+      }
       if (choice === "checkout") return goCheckout(deps, data);
       if (choice === "clear") {
         return startOrder(deps, [text("Panier vidé 🗑️")]);
@@ -398,14 +467,32 @@ export async function advance(
     }
 
     case "pickup_time": {
+      const options = buildPickupOptions(deps.hours, deps.now.date, deps.now.time);
+      let suffix: string | null = null;
+
       const sel = msg.reply?.id;
-      if (!sel || !sel.startsWith("time:")) {
-        const options = buildPickupOptions(deps.hours, deps.now.date, deps.now.time);
-        return reprompt(state, interactive(flow.pickupTimeList(options)));
+      if (sel && sel.startsWith("time:")) {
+        suffix = sel.slice("time:".length);
+      } else if (msg.text) {
+        const n = norm(msg.text);
+        if (n.includes("possible") || n.includes("asap") || n.includes("maintenant") || n.includes("des que")) {
+          suffix = "asap";
+        } else {
+          const byNum = typedIndex(n, options.length);
+          if (byNum >= 0) suffix = options[byNum].id.slice("time:".length);
+          else {
+            // Heure tapée : "12h30" / "12:30" / "12 30" → "12:30".
+            const hhmm = n.replace(/\s/g, "").replace(/h/i, ":");
+            const match = options.find((o) => o.id === `time:${hhmm}`);
+            if (match) suffix = hhmm;
+          }
+        }
       }
-      const suffix = sel.slice("time:".length);
-      const pickupTime =
-        suffix === "asap" ? "Dès que possible" : toFrenchTime(suffix);
+
+      if (!suffix)
+        return reprompt(state, interactive(flow.pickupTimeList(options)));
+
+      const pickupTime = suffix === "asap" ? "Dès que possible" : toFrenchTime(suffix);
       return {
         next: { step: "name", data: { ...data, pickupTime } },
         outbound: [text("Parfait. À quel nom dois-je enregistrer la commande ?")],
@@ -432,7 +519,12 @@ export async function advance(
     }
 
     case "confirm": {
-      const c = picked(msg, "confirm");
+      let c = picked(msg, "confirm");
+      if (!c && msg.text) {
+        const n = norm(msg.text);
+        if (n.includes("oui") || n.includes("confirm") || n === "ok" || n === "1") c = "yes";
+        else if (n.includes("non") || n.includes("annul") || n === "2") c = "no";
+      }
       if (c === "no")
         return {
           next: FRESH_STATE,

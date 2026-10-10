@@ -39,7 +39,7 @@ export function serviceButtons(catalog: Catalog): InteractiveMessage {
       id: `svc:${s.key}`,
       title: SERVICE_BUTTON[s.key],
     })),
-    footer: "Paiement sur place au retrait.",
+    footer: "Boutons ou tapez le numéro (1, 2…).",
   };
 }
 
@@ -58,6 +58,7 @@ export function categoryList(service: CatalogService): InteractiveMessage {
     body,
     button: "Voir la carte",
     sections: [{ title: "Catégories", rows }],
+    footer: "Ou tapez le numéro (1, 2…).",
   };
 }
 
@@ -83,7 +84,7 @@ export function itemList(
     body: cat.title,
     button: "Choisir un plat",
     sections: [{ rows }],
-    footer: "Tapez « panier » à tout moment.",
+    footer: "Tapez le numéro du plat, ou « panier ».",
   };
 }
 
@@ -111,6 +112,7 @@ export function afterAddButtons(cart: CartLine[]): InteractiveMessage {
       { id: "after:cart", title: "🛒 Voir panier" },
       { id: "after:checkout", title: "✅ Commander" },
     ],
+    footer: "Ou tapez : 1 continuer · 2 panier · 3 commander.",
   };
 }
 
@@ -144,7 +146,7 @@ export function cartView(cart: CartLine[]): InteractiveMessage {
       { id: "cart:checkout", title: "✅ Commander" },
       { id: "cart:clear", title: "🗑️ Vider" },
     ],
-    footer: "Paiement sur place au retrait.",
+    footer: "Ou tapez : 1 continuer · 2 commander · 3 vider.",
   };
 }
 
@@ -157,6 +159,7 @@ export function pickupTimeList(
     body: "À quelle heure souhaitez-vous récupérer votre commande aujourd'hui ?",
     button: "Choisir l'heure",
     sections: [{ rows: options.map((o) => ({ id: o.id, title: o.label })) }],
+    footer: "Ou tapez le numéro ou l'heure (ex. 12h30).",
   };
 }
 
@@ -176,5 +179,6 @@ export function confirmRecap(
       { id: "confirm:yes", title: "✅ Confirmer" },
       { id: "confirm:no", title: "❌ Annuler" },
     ],
+    footer: "Ou tapez « oui » / « non ».",
   };
 }

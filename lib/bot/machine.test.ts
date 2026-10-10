@@ -141,6 +141,58 @@ test("menu republished mid-order resets to service selection", async () => {
   assert.ok(r.outbound[0].type === "text" && r.outbound[0].body.includes("mis à jour"));
 });
 
+test("typed input drives the flow when buttons don't arrive", async () => {
+  const deps = makeDeps();
+  let state: ConversationState = { step: "greet", data: {} };
+
+  let r = await advance(txt("bonjour"), state, "336", deps);
+  state = r.next; // step service
+
+  // type "2" instead of tapping → soir
+  r = await advance(txt("2"), state, "336", deps);
+  assert.equal(r.next.step, "category");
+  assert.equal(r.next.data.serviceKey, "soir");
+  state = r.next;
+
+  // type "1" → first category
+  r = await advance(txt("1"), state, "336", deps);
+  assert.equal(r.next.step, "item");
+  state = r.next;
+
+  // type "1" → first item
+  r = await advance(txt("1"), state, "336", deps);
+  assert.equal(r.next.step, "quantity");
+  state = r.next;
+
+  // type quantity
+  r = await advance(txt("2"), state, "336", deps);
+  assert.equal(r.next.step, "after_add");
+  state = r.next;
+
+  // type "commander"
+  r = await advance(txt("commander"), state, "336", deps);
+  assert.equal(r.next.step, "details"); // soir = food → details first
+  state = r.next;
+
+  r = await advance(txt("2 Qabuli"), state, "336", deps);
+  assert.equal(r.next.step, "pickup_time");
+  state = r.next;
+
+  // type "1" → first pickup option (ASAP)
+  r = await advance(txt("1"), state, "336", deps);
+  assert.equal(r.next.step, "name");
+  state = r.next;
+
+  r = await advance(txt("Sara"), state, "336", deps);
+  assert.equal(r.next.step, "confirm");
+  state = r.next;
+
+  // type "oui"
+  r = await advance(txt("oui"), state, "336", deps);
+  assert.equal(r.clear, true);
+  assert.equal(deps.created(), 1);
+});
+
 test("closed today blocks ordering", async () => {
   const closedHours = {
     days: { ...hours.days, tuesday: { closed: true, ranges: [] } },
