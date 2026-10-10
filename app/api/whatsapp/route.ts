@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { verifySignature } from "@/lib/wa/signature";
 import { parseInbound } from "@/lib/wa/parse";
 import { sendText, sendInteractive, markRead } from "@/lib/wa/cloud-api";
@@ -63,8 +63,17 @@ export async function POST(req: Request): Promise<Response> {
     return NextResponse.json({ ok: true });
   }
 
+  // Accuser réception IMMÉDIATEMENT (Meta attend une réponse rapide, sinon il
+  // considère la livraison en échec et finit par throttler le webhook). Le
+  // traitement (DB + envois) se fait après la réponse via after().
+  let messages: InboundMessage[] = [];
   try {
-    const messages = parseInbound(payload);
+    messages = parseInbound(payload);
+  } catch (err) {
+    console.error("[wa] parseInbound échec:", err);
+  }
+
+  after(async () => {
     for (const msg of messages) {
       try {
         await handleMessage(msg);
@@ -72,11 +81,8 @@ export async function POST(req: Request): Promise<Response> {
         console.error("[wa] handleMessage échec:", err);
       }
     }
-  } catch (err) {
-    console.error("[wa] traitement POST échec:", err);
-  }
+  });
 
-  // Toujours accuser réception rapidement.
   return NextResponse.json({ ok: true });
 }
 
