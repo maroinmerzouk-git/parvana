@@ -33,6 +33,11 @@ export async function GET(request: Request) {
   const cutoff = new Date();
   cutoff.setMonth(cutoff.getMonth() - SITE.legal.retentionMonths);
 
+  // Conversations/accusés du bot WhatsApp : données éphémères, purgées après
+  // 30 jours (une commande terminée supprime déjà sa conversation).
+  const botCutoff = new Date();
+  botCutoff.setDate(botCutoff.getDate() - 30);
+
   try {
     const db = getDb();
 
@@ -46,12 +51,30 @@ export async function GET(request: Request) {
       .where(lt(schema.cateringRequests.createdAt, cutoff))
       .returning({ id: schema.cateringRequests.id });
 
+    const deletedOrders = await db
+      .delete(schema.orders)
+      .where(lt(schema.orders.createdAt, cutoff))
+      .returning({ id: schema.orders.id });
+
+    const deletedConversations = await db
+      .delete(schema.waConversations)
+      .where(lt(schema.waConversations.updatedAt, botCutoff))
+      .returning({ waId: schema.waConversations.waId });
+
+    const deletedProcessed = await db
+      .delete(schema.waProcessedMessages)
+      .where(lt(schema.waProcessedMessages.createdAt, botCutoff))
+      .returning({ id: schema.waProcessedMessages.id });
+
     const result = {
       ok: true,
       cutoff: cutoff.toISOString(),
       retentionMonths: SITE.legal.retentionMonths,
       deletedReservations: deletedReservations.length,
       deletedCatering: deletedCatering.length,
+      deletedOrders: deletedOrders.length,
+      deletedConversations: deletedConversations.length,
+      deletedProcessed: deletedProcessed.length,
     };
     console.log("[cron/cleanup]", result);
     return NextResponse.json(result);

@@ -133,3 +133,63 @@ export const siteSettings = pgTable("site_settings", {
 
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type NewSiteSetting = typeof siteSettings.$inferInsert;
+
+// Commandes à emporter passées via le bot WhatsApp. Auto-confirmées, réglées
+// sur place. `items` est un tableau de lignes de panier (name/qty/priceCents…),
+// `totalCents` est indicatif et peut être null si la commande ne contient que
+// des plats au forfait (formule du midi, sans prix unitaire).
+export const orders = pgTable(
+  "orders",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+
+    phone: text("phone").notNull(), // identifiant WhatsApp de l'expéditeur
+    customerName: text("customer_name").notNull(),
+
+    items: jsonb("items").notNull(), // CartLine[]
+    pickupTime: text("pickup_time").notNull(),
+    totalCents: integer("total_cents"), // indicatif, null si forfait uniquement
+    menuVersion: integer("menu_version"), // version du menu au moment de la commande
+    note: text("note"),
+
+    status: text("status").notNull().default("new"),
+    seenAt: timestamp("seen_at", { withTimezone: true }),
+  },
+  (t) => [
+    check("orders_status_check", sql`${t.status} in ('new', 'seen', 'archived')`),
+    index("orders_status_created_at_idx").on(t.status, t.createdAt.desc()),
+    index("orders_created_at_idx").on(t.createdAt.desc()),
+  ],
+);
+
+export type Order = typeof orders.$inferSelect;
+export type NewOrder = typeof orders.$inferInsert;
+
+// État de conversation du bot WhatsApp : une ligne par expéditeur (numéro
+// unique du restaurant). `data` porte l'étape courante, le panier, la version
+// du menu, etc. (blob JSON spécifique au bot).
+export const waConversations = pgTable("wa_conversations", {
+  waId: text("wa_id").primaryKey(),
+  step: text("step").notNull().default("greet"),
+  data: jsonb("data").notNull().default(sql`'{}'::jsonb`),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export type WaConversation = typeof waConversations.$inferSelect;
+export type NewWaConversation = typeof waConversations.$inferInsert;
+
+// Registre d'idempotence : un message entrant (id Meta) n'est traité qu'une
+// seule fois, même si Meta renvoie le webhook plusieurs fois.
+export const waProcessedMessages = pgTable("wa_processed_messages", {
+  id: text("id").primaryKey(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export type WaProcessedMessage = typeof waProcessedMessages.$inferSelect;

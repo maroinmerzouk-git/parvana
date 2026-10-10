@@ -6,10 +6,11 @@ import { logoutAdmin } from "@/app/admin/auth-actions";
 async function getUnreadCounts(): Promise<{
   reservations: number;
   catering: number;
+  orders: number;
 }> {
   try {
     const db = getDb();
-    const [resRows, cateringRows] = await Promise.all([
+    const [resRows, cateringRows, orderRows] = await Promise.all([
       db
         .select({ id: schema.reservations.id })
         .from(schema.reservations)
@@ -23,16 +24,27 @@ async function getUnreadCounts(): Promise<{
         .select({ id: schema.cateringRequests.id })
         .from(schema.cateringRequests)
         .where(eq(schema.cateringRequests.status, "new")),
+      db
+        .select({ id: schema.orders.id })
+        .from(schema.orders)
+        .where(eq(schema.orders.status, "new")),
     ]);
-    return { reservations: resRows.length, catering: cateringRows.length };
+    return {
+      reservations: resRows.length,
+      catering: cateringRows.length,
+      orders: orderRows.length,
+    };
   } catch {
-    return { reservations: 0, catering: 0 };
+    return { reservations: 0, catering: 0, orders: 0 };
   }
 }
 
 export async function AdminNav() {
-  const { reservations: unread, catering: unreadCatering } =
-    await getUnreadCounts();
+  const {
+    reservations: unread,
+    catering: unreadCatering,
+    orders: unreadOrders,
+  } = await getUnreadCounts();
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-sand/95 backdrop-blur">
@@ -75,6 +87,22 @@ export async function AdminNav() {
                 className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-terracotta px-1.5 text-[10px] font-medium text-beige"
               >
                 {unreadCatering}
+              </span>
+            )}
+          </Link>
+
+          <Link
+            href="/admin/commandes"
+            className="relative rounded-full px-3 py-2 text-ink hover:bg-beige"
+          >
+            <span className="hidden sm:inline">Commandes</span>
+            <span className="sm:hidden">Cmd</span>
+            {unreadOrders > 0 && (
+              <span
+                aria-label={`${unreadOrders} non lue${unreadOrders > 1 ? "s" : ""}`}
+                className="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-terracotta px-1.5 text-[10px] font-medium text-beige"
+              >
+                {unreadOrders}
               </span>
             )}
           </Link>

@@ -312,3 +312,31 @@ export async function archiveCateringRequest(rawId: string) {
   revalidatePath("/admin/catering");
   return { ok: true };
 }
+
+export async function markOrderSeen(rawId: string) {
+  await requireAuth();
+  const id = idSchema.parse(rawId);
+  const db = getDb();
+
+  await db
+    .update(schema.orders)
+    .set({ status: "seen", seenAt: new Date() })
+    .where(eq(schema.orders.id, id));
+
+  revalidatePath("/admin/commandes");
+  return { ok: true };
+}
+
+export async function archiveOrder(rawId: string) {
+  await requireAuth();
+  const id = idSchema.parse(rawId);
+  const db = getDb();
+
+  await db
+    .update(schema.orders)
+    .set({ status: "archived", seenAt: new Date() })
+    .where(eq(schema.orders.id, id));
+
+  revalidatePath("/admin/commandes");
+  return { ok: true };
+}
