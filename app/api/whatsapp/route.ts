@@ -36,8 +36,19 @@ export async function GET(req: Request): Promise<Response> {
   return new Response("Forbidden", { status: 403 });
 }
 
+/** Interrupteur d'arrêt : met le bot en pause sans toucher à la config Meta. */
+function botPaused(): boolean {
+  const v = process.env.WHATSAPP_BOT_PAUSED;
+  return v === "1" || v === "true";
+}
+
 // --- Réception des messages entrants ---
 export async function POST(req: Request): Promise<Response> {
+  // En pause : on accuse réception (pas de retry Meta) sans rien traiter.
+  if (botPaused()) {
+    return NextResponse.json({ ok: true, paused: true });
+  }
+
   // Corps brut : la signature est calculée sur ces octets exacts.
   const raw = await req.text();
 
